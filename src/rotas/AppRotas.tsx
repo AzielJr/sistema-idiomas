@@ -13,7 +13,8 @@ import MaterialDidaticoCadastro from "../pages/MaterialDidaticoCadastro";
 import Turmas from "../pages/Turmas";
 import TurmasCadastro from "../pages/TurmasCadastro";
 import Aulas from "../pages/Aulas";
-import AulasCadastro from "../pages/AulasCadastro"; 
+import AulasCadastro from "../pages/AulasCadastro";
+import MinhaAgenda from "../pages/MinhaAgenda"; 
 
 export default function AppRotas(){
     return(
@@ -46,6 +47,8 @@ export default function AppRotas(){
                 <Route path="/cadastros/aulas" element={<Aulas />} />
                 <Route path="/cadastros/aulas/cadastro" element={<AulasCadastro />} />
                 <Route path="/cadastros/aulas/cadastro/:id" element={<AulasCadastro />} />
+                
+                <Route path="/agenda/default" element={<MinhaAgenda />} />
             </Route>
             <Route path="*" element={<Navigate to = "/"/>}></Route>
         </Routes>
