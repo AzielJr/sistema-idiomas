@@ -20,7 +20,8 @@ import {
   InputLabel,
   Avatar,
   Divider,
-  Alert
+  Alert,
+  ButtonBase
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -31,7 +32,9 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Today as TodayIcon,
-  CalendarMonth as CalendarIcon
+  CalendarMonth as CalendarIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon
 } from "@mui/icons-material";
 import { useState } from "react";
 import PageHeader from "../components/PageHeader";
@@ -100,9 +103,12 @@ export default function MinhaAgenda() {
   ]);
 
   const [dialogAberto, setDialogAberto] = useState(false);
+  const [calendarioAberto, setCalendarioAberto] = useState(false);
   const [compromissoEditando, setCompromissoEditando] = useState<Compromisso | null>(null);
   const [filtroTipo, setFiltroTipo] = useState<string>('todos');
   const [filtroStatus, setFiltroStatus] = useState<string>('todos');
+  const [mesAtual, setMesAtual] = useState(new Date());
+  const [dataSelecionada, setDataSelecionada] = useState<string>('');
 
   const [novoCompromisso, setNovoCompromisso] = useState<Omit<Compromisso, 'id'>>({
     titulo: '',
@@ -115,24 +121,29 @@ export default function MinhaAgenda() {
     status: 'agendado'
   });
 
-  const abrirDialog = (compromisso?: Compromisso) => {
+  const abrirDialog = (compromisso?: Compromisso, dataPreSelecionada?: string) => {
     if (compromisso) {
       setCompromissoEditando(compromisso);
       setNovoCompromisso(compromisso);
+      setDialogAberto(true);
     } else {
       setCompromissoEditando(null);
       setNovoCompromisso({
         titulo: '',
         descricao: '',
-        data: '',
+        data: dataPreSelecionada || '',
         hora: '',
         tipo: 'aula',
         participantes: '',
         local: '',
         status: 'agendado'
       });
+      if (dataPreSelecionada) {
+        setDialogAberto(true);
+      } else {
+        setCalendarioAberto(true);
+      }
     }
-    setDialogAberto(true);
   };
 
   const fecharDialog = () => {
@@ -172,6 +183,51 @@ export default function MinhaAgenda() {
 
   const formatarData = (data: string) => {
     return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+  };
+
+  // Funções do calendário
+  const obterDiasDoMes = (data: Date) => {
+    const ano = data.getFullYear();
+    const mes = data.getMonth();
+    const primeiroDia = new Date(ano, mes, 1);
+    const ultimoDia = new Date(ano, mes + 1, 0);
+    const diasDoMes = [];
+    
+    // Adicionar dias vazios do início
+    const diaSemanaInicio = primeiroDia.getDay();
+    for (let i = 0; i < diaSemanaInicio; i++) {
+      diasDoMes.push(null);
+    }
+    
+    // Adicionar todos os dias do mês
+    for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+      diasDoMes.push(new Date(ano, mes, dia));
+    }
+    
+    return diasDoMes;
+  };
+
+  const formatarDataParaInput = (data: Date) => {
+    return data.toISOString().split('T')[0];
+  };
+
+  const mudarMes = (direcao: number) => {
+    setMesAtual(prev => {
+      const novaData = new Date(prev);
+      novaData.setMonth(prev.getMonth() + direcao);
+      return novaData;
+    });
+  };
+
+  const selecionarData = (data: Date) => {
+    const dataFormatada = formatarDataParaInput(data);
+    setDataSelecionada(dataFormatada);
+    setCalendarioAberto(false);
+    abrirDialog(undefined, dataFormatada);
+  };
+
+  const fecharCalendario = () => {
+    setCalendarioAberto(false);
   };
 
   const proximosCompromissos = compromissos
@@ -457,6 +513,80 @@ export default function MinhaAgenda() {
       >
         <AddIcon />
       </Fab>
+
+      {/* Dialog do Calendário */}
+      <Dialog open={calendarioAberto} onClose={fecharCalendario} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <IconButton onClick={() => mudarMes(-1)}>
+              <ChevronLeftIcon />
+            </IconButton>
+            <Typography variant="h6">
+              {mesAtual.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+            </Typography>
+            <IconButton onClick={() => mudarMes(1)}>
+              <ChevronRightIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ p: 2 }}>
+            {/* Cabeçalho dos dias da semana */}
+            <Grid container spacing={1} sx={{ mb: 1 }}>
+              {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map((dia) => (
+                <Grid item xs key={dia} sx={{ textAlign: 'center' }}>
+                  <Typography variant="caption" fontWeight="bold" color="text.secondary">
+                    {dia}
+                  </Typography>
+                </Grid>
+              ))}
+            </Grid>
+            
+            {/* Dias do calendário */}
+            <Grid container spacing={1}>
+              {obterDiasDoMes(mesAtual).map((dia, index) => (
+                <Grid item xs key={index} sx={{ aspectRatio: '1', minHeight: 40 }}>
+                  {dia ? (
+                    <ButtonBase
+                      onClick={() => selecionarData(dia)}
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: 1,
+                        border: '1px solid #e0e0e0',
+                        backgroundColor: 
+                          dia.toDateString() === new Date().toDateString() 
+                            ? '#1976d2' 
+                            : 'white',
+                        color: 
+                          dia.toDateString() === new Date().toDateString() 
+                            ? 'white' 
+                            : 'text.primary',
+                        '&:hover': {
+                          backgroundColor: '#f5f5f5',
+                          color: 'text.primary'
+                        },
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Typography variant="body2">
+                        {dia.getDate()}
+                      </Typography>
+                    </ButtonBase>
+                  ) : (
+                    <Box sx={{ width: '100%', height: '100%' }} />
+                  )}
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={fecharCalendario}>Cancelar</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Dialog para adicionar/editar compromisso */}
       <Dialog open={dialogAberto} onClose={fecharDialog} maxWidth="md" fullWidth>

@@ -162,11 +162,8 @@ export default function SideBar({mobileOpen=false, onClose, variant="permanent"}
               secao: "Mov",
               label: "Movimentações",
               items: [
-                { text: "Plano de Aulas", path: "/mov/plano_aula" },
-                { text: "Presença / Faltas", path: "/mov/presenca_falta" },
-                { text: "Detalhamento", path: "/mov/detalhamento" },
-                { text: "Dias - Turmas", path: "/mov/dias_turmas" },
-                { text: "Agenda - Atividades", path: "/mov/agenda_atividades" }
+                { text: "Plano de Aulas", path: "/movimentacoes/plano-aulas" },
+                { text: "Presença / Faltas", path: "/movimentacoes/presenca-faltas" }
               ]
             },
             {
@@ -191,11 +188,10 @@ export default function SideBar({mobileOpen=false, onClose, variant="permanent"}
               secao: "Administracao",
               label: "Administração",
               items: [
-                { text: "Unidades", path: "/administracao/unidades" },
-                { text: "Grupos", path: "/administracao/grupos" },
+                { text: "Unidade", path: "/administracao/unidade" },
+                { text: "Grupos de Acesso", path: "/administracao/grupos-acesso" },
                 { text: "Usuários", path: "/administracao/usuarios" },
-                { text: "Preferências", path: "/administracao/preferencias" },
-                { text: "LOG do Sistema", path: "/administracao/log" }
+                { text: "LOG do Sistema", path: "/administracao/log-sistema" }
               ]
             }
             

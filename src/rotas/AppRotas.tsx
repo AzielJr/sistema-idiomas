@@ -14,7 +14,15 @@ import Turmas from "../pages/Turmas";
 import TurmasCadastro from "../pages/TurmasCadastro";
 import Aulas from "../pages/Aulas";
 import AulasCadastro from "../pages/AulasCadastro";
-import MinhaAgenda from "../pages/MinhaAgenda"; 
+import MinhaAgenda from "../pages/MinhaAgenda";
+import PlanoAulas from "../pages/PlanoAulas";
+import PresencaFaltas from "../pages/PresencaFaltas";
+import ProjetoLeitura from "../pages/ProjetoLeitura";
+import ProjetoEscrita from "../pages/ProjetoEscrita";
+import Unidade from "../pages/Unidade";
+import GruposAcesso from "../pages/GruposAcesso";
+import Usuarios from "../pages/Usuarios";
+import LogSistema from "../pages/LogSistema"; 
 
 export default function AppRotas(){
     return(
@@ -49,6 +57,17 @@ export default function AppRotas(){
                 <Route path="/cadastros/aulas/cadastro/:id" element={<AulasCadastro />} />
                 
                 <Route path="/agenda/default" element={<MinhaAgenda />} />
+                
+                <Route path="/movimentacoes/plano-aulas" element={<PlanoAulas />} />
+                <Route path="/movimentacoes/presenca-faltas" element={<PresencaFaltas />} />
+                
+                <Route path="/projetos/leitura" element={<ProjetoLeitura />} />
+                <Route path="/projetos/escrita" element={<ProjetoEscrita />} />
+                
+                <Route path="/administracao/unidade" element={<Unidade />} />
+                <Route path="/administracao/grupos-acesso" element={<GruposAcesso />} />
+                <Route path="/administracao/usuarios" element={<Usuarios />} />
+                <Route path="/administracao/log-sistema" element={<LogSistema />} />
             </Route>
             <Route path="*" element={<Navigate to = "/"/>}></Route>
         </Routes>
