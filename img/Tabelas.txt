@@ -1,0 +1,291 @@
+-- Tabela de Usuários Genéricos
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    nome_completo VARCHAR(150) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha_hash VARCHAR(200) NOT NULL,
+    tipo_usuario VARCHAR(30) NOT NULL, -- aluno, professor, coordenador, secretaria etc
+    foto_url VARCHAR(255),
+    telefone VARCHAR(30),
+    data_nascimento DATE,
+    genero VARCHAR(20),
+    criado_em TIMESTAMP DEFAULT NOW(),
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Endereço pode ser reaproveitado para vários perfis
+CREATE TABLE endereco (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    rua VARCHAR(100),
+    numero VARCHAR(15),
+    complemento VARCHAR(50),
+    bairro VARCHAR(60),
+    cidade VARCHAR(60),
+    estado VARCHAR(30),
+    cep VARCHAR(15),
+    pais VARCHAR(40)
+);
+
+-- Responsáveis Legais
+CREATE TABLE responsaveis (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    telefone VARCHAR(30),
+    email VARCHAR(100),
+    grau_parentesco VARCHAR(40),
+    data_nascimento DATE
+);
+
+-- Perfil de Aluno
+CREATE TABLE alunos (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id),
+    filiacao VARCHAR(100),
+    bolsista BOOLEAN NOT NULL DEFAULT FALSE,
+    responsavel_id INTEGER REFERENCES responsaveis(id),
+    material_didatico_id INTEGER,
+    observacoes TEXT
+);
+
+-- Perfil de Professor
+CREATE TABLE professores (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id),
+    formacao TEXT,
+    experiencia_anos INTEGER,
+    data_admissao DATE,
+    salario DECIMAL(10,2),
+    ativo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Coordenador (associado a usuário e opcionalmente a professor)
+CREATE TABLE coordenadores (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id),
+    professor_id INTEGER REFERENCES professores(user_id),
+    data_inicio DATE,
+    data_fim DATE
+);
+
+-- Tabela de Turmas
+CREATE TABLE turmas (
+    id SERIAL PRIMARY KEY,
+    nome_turma VARCHAR(50),
+    nivel VARCHAR(30),
+    ano INTEGER,
+    dias_aula VARCHAR(50),
+    horario_inicio TIME,
+    horario_fim TIME,
+    professor_id INTEGER REFERENCES professores(user_id),
+    coordenador_id INTEGER REFERENCES coordenadores(user_id),
+    sala VARCHAR(30),
+    capacidade_max INTEGER,
+    material_didatico_id INTEGER
+);
+
+-- Associação N:N: AlunosTurma (matrícula histórica)
+CREATE TABLE alunos_turma (
+    id SERIAL PRIMARY KEY,
+    aluno_id INTEGER REFERENCES alunos(user_id),
+    turma_id INTEGER REFERENCES turmas(id),
+    data_inicio DATE,
+    data_fim DATE,
+    status VARCHAR(30)
+);
+
+-- Plano de Aula
+CREATE TABLE planos_de_aula (
+    id SERIAL PRIMARY KEY,
+    professor_id INTEGER REFERENCES professores(user_id),
+    turma_id INTEGER REFERENCES turmas(id),
+    data_aula DATE,
+    tipo_modelo VARCHAR(30),
+    arquivo_url VARCHAR(255),
+    status VARCHAR(30),
+    data_envio TIMESTAMP,
+    feedback_id INTEGER
+);
+
+CREATE TABLE feedback_plano_aula (
+    id SERIAL PRIMARY KEY,
+    plano_id INTEGER REFERENCES planos_de_aula(id),
+    coordenador_id INTEGER REFERENCES coordenadores(user_id),
+    data_feedback TIMESTAMP,
+    texto_feedback TEXT,
+    aprovado BOOLEAN
+);
+
+-- Registro de Conteúdo da Aula
+CREATE TABLE registro_conteudo_aula (
+    id SERIAL PRIMARY KEY,
+    professor_id INTEGER REFERENCES professores(user_id),
+    turma_id INTEGER REFERENCES turmas(id),
+    data_aula DATE,
+    conteudo TEXT,
+    observacoes TEXT
+);
+
+-- Aulas (para controle de presença)
+CREATE TABLE aulas (
+    id SERIAL PRIMARY KEY,
+    turma_id INTEGER REFERENCES turmas(id),
+    data DATE,
+    horario_inicio TIME,
+    horario_fim TIME,
+    professor_id INTEGER REFERENCES professores(user_id)
+);
+
+-- Presenças/Faltas
+CREATE TABLE presencas_aula (
+    id SERIAL PRIMARY KEY,
+    aula_id INTEGER REFERENCES aulas(id),
+    aluno_id INTEGER REFERENCES alunos(user_id),
+    presente BOOLEAN,
+    tipo_falta VARCHAR(30),
+    justificativa_texto TEXT,
+    anexo_atestado_url VARCHAR(255)
+);
+
+-- Report Card (boletim)
+CREATE TABLE report_card (
+    id SERIAL PRIMARY KEY,
+    aluno_id INTEGER REFERENCES alunos(user_id),
+    turma_id INTEGER REFERENCES turmas(id),
+    professor_id INTEGER REFERENCES professores(user_id),
+    data DATE,
+    ano_leitivo INTEGER,
+    status VARCHAR(30),
+    comentario_geral TEXT
+);
+
+-- Detalhamento de Notas do Report Card
+CREATE TABLE report_card_term (
+    id SERIAL PRIMARY KEY,
+    report_card_id INTEGER REFERENCES report_card(id),
+    termo VARCHAR(10), -- 1st Term, 2nd Term
+    participacao INTEGER,
+    exercicios INTEGER,
+    habilidade_oral INTEGER,
+    habilidade_escrita INTEGER,
+    habilidade_leitura INTEGER,
+    projeto_escrita INTEGER,
+    uso_idioma INTEGER,
+    producao_oral INTEGER,
+    compreensao_oral INTEGER,
+    comentario TEXT,
+    media NUMERIC(5,2),
+    media_final NUMERIC(5,2)
+);
+
+-- Comunicados e Mensagens (flexível)
+CREATE TABLE comunicados (
+    id SERIAL PRIMARY KEY,
+    remetente_id INTEGER REFERENCES users(id),
+    destinatario_tipo VARCHAR(30),
+    destinatario_id INTEGER,
+    assunto VARCHAR(100),
+    mensagem TEXT,
+    data_envio TIMESTAMP,
+    arquivo_anexo_url VARCHAR(255)
+);
+
+-- Secretaria: matrículas
+CREATE TABLE matriculas (
+    id SERIAL PRIMARY KEY,
+    aluno_id INTEGER REFERENCES alunos(user_id),
+    data_matricula DATE,
+    data_cancelamento DATE,
+    status VARCHAR(30),
+    usuario_secretaria_id INTEGER REFERENCES users(id)
+);
+
+CREATE TABLE solicitacoes_secretaria (
+    id SERIAL PRIMARY KEY,
+    solicitante_id INTEGER REFERENCES users(id),
+    tipo_solicitacao VARCHAR(50),
+    descricao TEXT,
+    data_solicitacao TIMESTAMP,
+    status VARCHAR(30),
+    anexo_url VARCHAR(255),
+    data_finalizacao TIMESTAMP,
+    usuario_responsavel_id INTEGER REFERENCES users(id)
+);
+
+-- Financeiro: Mensalidades, Boletos e Transações
+CREATE TABLE mensalidades (
+    id SERIAL PRIMARY KEY,
+    aluno_id INTEGER REFERENCES alunos(user_id),
+    valor DECIMAL(10,2),
+    data_vencimento DATE,
+    data_pagamento DATE,
+    forma_pagamento VARCHAR(30),
+    status VARCHAR(30),
+    comprovante_url VARCHAR(255),
+    envio_email BOOLEAN DEFAULT FALSE,
+    observacao TEXT
+);
+
+CREATE TABLE boletos (
+    id SERIAL PRIMARY KEY,
+    mensalidade_id INTEGER REFERENCES mensalidades(id),
+    linha_digitavel VARCHAR(70),
+    pdf_url VARCHAR(255),
+    enviado BOOLEAN,
+    data_envio TIMESTAMP
+);
+
+CREATE TABLE transacoes_financeiras (
+    id SERIAL PRIMARY KEY,
+    aluno_id INTEGER REFERENCES alunos(user_id),
+    tipo VARCHAR(10),
+    categoria VARCHAR(50),
+    valor DECIMAL(10,2),
+    data DATE,
+    descricao TEXT,
+    status VARCHAR(30)
+);
+
+-- Agenda Curricular
+CREATE TABLE agenda_atividades (
+    id SERIAL PRIMARY KEY,
+    coordenador_id INTEGER REFERENCES coordenadores(user_id),
+    data DATE,
+    descricao_atividade TEXT,
+    publico_alvo VARCHAR(30),
+    arquivo_anexo_url VARCHAR(255),
+    status VARCHAR(30)
+);
+
+-- Projetos - Leitura e Escrita
+CREATE TABLE projetos_leitura (
+    id SERIAL PRIMARY KEY,
+    aluno_id INTEGER REFERENCES alunos(user_id),
+    turma_id INTEGER REFERENCES turmas(id),
+    professor_id INTEGER REFERENCES professores(user_id),
+    titulo VARCHAR(100),
+    status VARCHAR(30),
+    descricao TEXT,
+    arquivo_url VARCHAR(255),
+    data_entrega DATE,
+    nota INTEGER
+);
+
+CREATE TABLE projetos_escrita (
+    id SERIAL PRIMARY KEY,
+    aluno_id INTEGER REFERENCES alunos(user_id),
+    turma_id INTEGER REFERENCES turmas(id),
+    professor_id INTEGER REFERENCES professores(user_id),
+    titulo VARCHAR(100),
+    status VARCHAR(30),
+    descricao TEXT,
+    arquivo_url VARCHAR(255),
+    data_entrega DATE,
+    nota INTEGER
+);
+
+-- Log de auditoria (importante para segurança/administração)
+CREATE TABLE log_usuario (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    acao VARCHAR(100),
+    detalhes TEXT,
+    data TIMESTAMP DEFAULT NOW()
+);
