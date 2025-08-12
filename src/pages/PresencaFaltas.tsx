@@ -413,15 +413,25 @@ export default function PresencaFaltas() {
           {registroEditando ? 'Editar Registro' : 'Novo Registro de Presença'}
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Aluno</InputLabel>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Aluno</InputLabel>
                 <Select
                   value={novoRegistro.alunos_id}
                   label="Aluno"
                   onChange={(e) => setNovoRegistro(prev => ({ ...prev, alunos_id: Number(e.target.value) }))}
+                  sx={{
+                    minHeight: '56px',
+                    fontSize: '16px',
+                    '& .MuiSelect-select': {
+                      padding: '16.5px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="" disabled>
+                    <em>Selecione um aluno</em>
+                  </MenuItem>
                   {alunos.map((aluno) => (
                     <MenuItem key={aluno.id} value={aluno.id}>
                       {aluno.nome}
@@ -430,14 +440,24 @@ export default function PresencaFaltas() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Aula</InputLabel>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Aula</InputLabel>
                 <Select
                   value={novoRegistro.aulas_id}
                   label="Aula"
                   onChange={(e) => setNovoRegistro(prev => ({ ...prev, aulas_id: Number(e.target.value) }))}
+                  sx={{
+                    minHeight: '56px',
+                    fontSize: '16px',
+                    '& .MuiSelect-select': {
+                      padding: '16.5px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="" disabled>
+                    <em>Selecione uma aula</em>
+                  </MenuItem>
                   {aulas.map((aula) => (
                     <MenuItem key={aula.id} value={aula.id}>
                       {aula.descricao}
@@ -446,7 +466,7 @@ export default function PresencaFaltas() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Data"
@@ -454,15 +474,27 @@ export default function PresencaFaltas() {
                 InputLabelProps={{ shrink: true }}
                 value={novoRegistro.data}
                 onChange={(e) => setNovoRegistro(prev => ({ ...prev, data: e.target.value }))}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  }
+                }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Ano Letivo"
                 type="number"
                 value={novoRegistro.ano_letivo}
                 onChange={(e) => setNovoRegistro(prev => ({ ...prev, ano_letivo: Number(e.target.value) }))}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  }
+                }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -474,18 +506,29 @@ export default function PresencaFaltas() {
                   />
                 }
                 label="Presente"
+                sx={{ fontSize: '16px' }}
               />
             </Grid>
             {!novoRegistro.presenca && (
               <>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Tipo de Falta</InputLabel>
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth size="medium">
+                    <InputLabel sx={{ fontSize: '16px' }}>Tipo de Falta</InputLabel>
                     <Select
                       value={novoRegistro.tipo_falta}
                       label="Tipo de Falta"
                       onChange={(e) => setNovoRegistro(prev => ({ ...prev, tipo_falta: e.target.value }))}
+                      sx={{
+                        minHeight: '56px',
+                        fontSize: '16px',
+                        '& .MuiSelect-select': {
+                          padding: '16.5px 14px'
+                        }
+                      }}
                     >
+                      <MenuItem value="" disabled>
+                        <em>Selecione o tipo de falta</em>
+                      </MenuItem>
                       {tiposFalta.map((tipo) => (
                         <MenuItem key={tipo} value={tipo}>
                           {tipo}
@@ -494,7 +537,7 @@ export default function PresencaFaltas() {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Anexo/Atestado URL"
@@ -502,6 +545,12 @@ export default function PresencaFaltas() {
                     onChange={(e) => setNovoRegistro(prev => ({ ...prev, anexo_atestado_url: e.target.value }))}
                     InputProps={{
                       startAdornment: <AttachFileIcon sx={{ mr: 1, color: 'action.active' }} />
+                    }}
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        minHeight: '56px',
+                        fontSize: '16px'
+                      }
                     }}
                   />
                 </Grid>
@@ -514,6 +563,11 @@ export default function PresencaFaltas() {
                     value={novoRegistro.justificativa}
                     onChange={(e) => setNovoRegistro(prev => ({ ...prev, justificativa: e.target.value }))}
                     placeholder="Descreva a justificativa para a falta..."
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        fontSize: '16px'
+                      }
+                    }}
                   />
                 </Grid>
               </>
@@ -525,6 +579,12 @@ export default function PresencaFaltas() {
                 value={novoRegistro.detalhes}
                 onChange={(e) => setNovoRegistro(prev => ({ ...prev, detalhes: e.target.value }))}
                 placeholder="Informações adicionais..."
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  }
+                }}
               />
             </Grid>
           </Grid>

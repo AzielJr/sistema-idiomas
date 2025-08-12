@@ -99,12 +99,19 @@ export default function TurmasCadastro() {
 
             <Grid container spacing={2}>
               <Grid size={{xs:12, sm:6}}>
-                <FormControl fullWidth required>
-                  <InputLabel>Nível</InputLabel>
+                <FormControl fullWidth required size="medium">
+                  <InputLabel sx={{ fontSize: '16px' }}>Nível</InputLabel>
                   <Select
                     value={turma.nivel}
                     onChange={(e) => handleChange("nivel", e.target.value)}
                     label="Nível"
+                    sx={{
+                      minHeight: '56px',
+                      '& .MuiSelect-select': {
+                        fontSize: '16px',
+                        padding: '16px 14px'
+                      }
+                    }}
                   >
                     <MenuItem value=""><em>Selecione</em></MenuItem>
                     <MenuItem value="Básico">Básico</MenuItem>
@@ -241,12 +248,19 @@ export default function TurmasCadastro() {
           <Stack spacing={2}>
             <Grid container spacing={2}>
               <Grid size={{xs:12, sm:6}}>
-                <FormControl fullWidth>
-                  <InputLabel>Professor</InputLabel>
+                <FormControl fullWidth size="medium">
+                  <InputLabel sx={{ fontSize: '16px' }}>Professor</InputLabel>
                   <Select
                     value={turma.professores_id}
                     onChange={(e) => handleChange("professores_id", e.target.value)}
                     label="Professor"
+                    sx={{
+                      minHeight: '56px',
+                      '& .MuiSelect-select': {
+                        fontSize: '16px',
+                        padding: '16px 14px'
+                      }
+                    }}
                   >
                     <MenuItem value=""><em>Selecione</em></MenuItem>
                     {professores.map((professor) => (
@@ -258,12 +272,19 @@ export default function TurmasCadastro() {
                 </FormControl>
               </Grid>
               <Grid size={{xs:12, sm:6}}>
-                <FormControl fullWidth>
-                  <InputLabel>Coordenador</InputLabel>
+                <FormControl fullWidth size="medium">
+                  <InputLabel sx={{ fontSize: '16px' }}>Coordenador</InputLabel>
                   <Select
                     value={turma.coordenador_id}
                     onChange={(e) => handleChange("coordenador_id", e.target.value)}
                     label="Coordenador"
+                    sx={{
+                      minHeight: '56px',
+                      '& .MuiSelect-select': {
+                        fontSize: '16px',
+                        padding: '16px 14px'
+                      }
+                    }}
                   >
                     <MenuItem value=""><em>Selecione</em></MenuItem>
                     {coordenadores.map((coordenador) => (
@@ -276,12 +297,19 @@ export default function TurmasCadastro() {
               </Grid>
             </Grid>
 
-            <FormControl fullWidth>
-              <InputLabel>Material Didático</InputLabel>
+            <FormControl fullWidth size="medium">
+              <InputLabel sx={{ fontSize: '16px' }}>Material Didático</InputLabel>
               <Select
                 value={turma.material_didatico_id}
                 onChange={(e) => handleChange("material_didatico_id", e.target.value)}
                 label="Material Didático"
+                sx={{
+                  minHeight: '56px',
+                  '& .MuiSelect-select': {
+                    fontSize: '16px',
+                    padding: '16px 14px'
+                  }
+                }}
               >
                 <MenuItem value=""><em>Selecione</em></MenuItem>
                 {materiaisDidaticos.map((material) => (
@@ -348,12 +376,19 @@ export default function TurmasCadastro() {
               placeholder="Ex: Segunda, Quarta, Sexta"
             />
 
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
+            <FormControl fullWidth size="medium">
+              <InputLabel sx={{ fontSize: '16px' }}>Status</InputLabel>
               <Select
                 value={turma.status}
                 onChange={(e) => handleChange("status", e.target.value)}
                 label="Status"
+                sx={{
+                  minHeight: '56px',
+                  '& .MuiSelect-select': {
+                    fontSize: '16px',
+                    padding: '16px 14px'
+                  }
+                }}
               >
                 <MenuItem value={1}>Ativa</MenuItem>
                 <MenuItem value={0}>Inativa</MenuItem>

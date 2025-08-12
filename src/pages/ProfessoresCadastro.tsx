@@ -129,14 +129,21 @@ export default function ProfessoresCadastro() {
           </Grid>
         </Grid>
 
-        <FormControl fullWidth>
-          <InputLabel>Usuário do Sistema</InputLabel>
+        <FormControl fullWidth size="medium">
+          <InputLabel sx={{ fontSize: '16px' }}>Usuário do Sistema (Login de Acesso)</InputLabel>
           <Select
             value={professor.system_users_id}
             onChange={(e) => handleChange("system_users_id", e.target.value)}
-            label="Usuário do Sistema"
+            label="Usuário do Sistema (Login de Acesso)"
+            sx={{
+              minHeight: '56px',
+              fontSize: '16px',
+              '& .MuiSelect-select': {
+                padding: '16.5px 14px'
+              }
+            }}
           >
-            <MenuItem value=""><em>Selecione um usuário</em></MenuItem>
+            <MenuItem value=""><em>Selecione um usuário do sistema</em></MenuItem>
             <MenuItem value="1">Admin - Administrador</MenuItem>
             <MenuItem value="2">Prof1 - Professor 1</MenuItem>
             <MenuItem value="3">Prof2 - Professor 2</MenuItem>

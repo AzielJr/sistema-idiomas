@@ -286,7 +286,7 @@ export default function TiposDespesa() {
             <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
-                label="Buscar Tipo"
+                label="Buscar"
                 value={filtros.busca}
                 onChange={(e) => setFiltros(prev => ({ ...prev, busca: e.target.value }))}
                 InputProps={{
@@ -304,6 +304,12 @@ export default function TiposDespesa() {
                 SelectProps={{
                   native: true,
                 }}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  }
+                }}
               >
                 <option value="">Todos</option>
                 <option value="true">Ativo</option>
@@ -320,12 +326,22 @@ export default function TiposDespesa() {
                 Limpar
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Typography variant="body2" color="text.secondary">
-                {tiposFiltrados.length} tipo(s) encontrado(s)
-              </Typography>
-            </Grid>
           </Grid>
+          
+          {/* Botões de ação */}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              {tiposFiltrados.length} registro(s)
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => abrirDialog()}
+              sx={{ ml: 2 }}
+            >
+              Cadastrar
+            </Button>
+          </Box>
         </CardContent>
       </Card>
 
@@ -446,6 +462,12 @@ export default function TiposDespesa() {
                 onChange={(e) => setNovoTipo(prev => ({ ...prev, ativo: e.target.value === 'true' }))}
                 SelectProps={{
                   native: true,
+                }}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  }
                 }}
               >
                 <option value="true">Ativo</option>

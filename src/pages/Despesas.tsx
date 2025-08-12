@@ -366,17 +366,35 @@ export default function Despesas() {
                 InputProps={{
                   startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />
                 }}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: '16px'
+                  }
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Status</InputLabel>
                 <Select
                   value={filtros.status}
                   label="Status"
                   onChange={(e) => setFiltros(prev => ({ ...prev, status: e.target.value }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
-                  <MenuItem value="">Todos</MenuItem>
+                  <MenuItem value="">
+                    <em>Todos</em>
+                  </MenuItem>
                   <MenuItem value="Pago">Pago</MenuItem>
                   <MenuItem value="Em aberto">Em aberto</MenuItem>
                   <MenuItem value="Vencido">Vencido</MenuItem>
@@ -385,14 +403,23 @@ export default function Despesas() {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Grupo</InputLabel>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Grupo</InputLabel>
                 <Select
                   value={filtros.grupo}
                   label="Grupo"
                   onChange={(e) => setFiltros(prev => ({ ...prev, grupo: e.target.value }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
-                  <MenuItem value="">Todos</MenuItem>
+                  <MenuItem value="">
+                    <em>Todos</em>
+                  </MenuItem>
                   {gruposDespesa.map(grupo => (
                     <MenuItem key={grupo.id} value={grupo.id.toString()}>
                       {grupo.descricao}
@@ -432,9 +459,21 @@ export default function Despesas() {
               </Button>
             </Grid>
           </Grid>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {despesasFiltradas.length} despesa(s) encontrada(s)
-          </Typography>
+          
+          {/* Botões de ação */}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              {despesasFiltradas.length} registro(s)
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => abrirDialog()}
+              sx={{ ml: 2 }}
+            >
+              Cadastrar
+            </Button>
+          </Box>
         </CardContent>
       </Card>
 
@@ -555,13 +594,23 @@ export default function Despesas() {
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Grupo de Despesa</InputLabel>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Grupo de Despesa</InputLabel>
                 <Select
                   value={novaDespesa.id_grupo_despesa || ''}
                   label="Grupo de Despesa"
                   onChange={(e) => setNovaDespesa(prev => ({ ...prev, id_grupo_despesa: Number(e.target.value) }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="">
+                    <em>Selecione um grupo</em>
+                  </MenuItem>
                   {gruposDespesa.map(grupo => (
                     <MenuItem key={grupo.id} value={grupo.id}>
                       {grupo.descricao}
@@ -571,13 +620,23 @@ export default function Despesas() {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Responsável</InputLabel>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Responsável</InputLabel>
                 <Select
                   value={novaDespesa.id_usuario || ''}
                   label="Responsável"
                   onChange={(e) => setNovaDespesa(prev => ({ ...prev, id_usuario: Number(e.target.value) }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="">
+                    <em>Selecione um responsável</em>
+                  </MenuItem>
                   {usuarios.map(usuario => (
                     <MenuItem key={usuario.id} value={usuario.id}>
                       {usuario.nome} - {usuario.tipo}
@@ -617,13 +676,23 @@ export default function Despesas() {
               />
             </Grid>
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Status</InputLabel>
                 <Select
                   value={novaDespesa.status || ''}
                   label="Status"
                   onChange={(e) => setNovaDespesa(prev => ({ ...prev, status: e.target.value as any }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="">
+                    <em>Selecione o status</em>
+                  </MenuItem>
                   <MenuItem value="Pago">Pago</MenuItem>
                   <MenuItem value="Em aberto">Em aberto</MenuItem>
                   <MenuItem value="Vencido">Vencido</MenuItem>

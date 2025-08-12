@@ -60,7 +60,7 @@ export default function AlunosCadastro() {
         />
 
         <Grid container spacing={2}>
-          <Grid size={{xs:12, sm:6}}>
+          <Grid size={{xs:12, md:4}}>
             <TextField
               label="Data de Nascimento"
               type="date"
@@ -72,15 +72,22 @@ export default function AlunosCadastro() {
               }}
             />
           </Grid>
-          <Grid size={{xs:12, sm:6}}>
-            <FormControl fullWidth>
-              <InputLabel>Nível</InputLabel>
+          <Grid size={{xs:12, md:8}}>
+            <FormControl fullWidth size="medium">
+              <InputLabel sx={{ fontSize: '16px' }}>Nível de Ensino</InputLabel>
               <Select
                 value={aluno.nivel}
                 onChange={(e) => handleChange("nivel", e.target.value)}
-                label="Nível"
+                label="Nível de Ensino"
+                sx={{
+                  minHeight: '56px',
+                  fontSize: '16px',
+                  '& .MuiSelect-select': {
+                    padding: '16.5px 14px'
+                  }
+                }}
               >
-                <MenuItem value=""><em>Selecione</em></MenuItem>
+                <MenuItem value=""><em>Selecione o nível de ensino</em></MenuItem>
                 <MenuItem value="Básico">Básico</MenuItem>
                 <MenuItem value="Intermediário">Intermediário</MenuItem>
                 <MenuItem value="Avançado">Avançado</MenuItem>
@@ -91,17 +98,24 @@ export default function AlunosCadastro() {
           </Grid>
         </Grid>
 
-        <FormControl fullWidth>
-          <InputLabel>Material Didático</InputLabel>
+        <FormControl fullWidth size="medium">
+          <InputLabel sx={{ fontSize: '16px' }}>Material Didático Utilizado</InputLabel>
           <Select
             value={aluno.materialDidatico}
             onChange={(e) => handleChange("materialDidatico", e.target.value)}
-            label="Material Didático"
+            label="Material Didático Utilizado"
+            sx={{
+              minHeight: '56px',
+              fontSize: '16px',
+              '& .MuiSelect-select': {
+                padding: '16.5px 14px'
+              }
+            }}
           >
-            <MenuItem value=""><em>Selecione</em></MenuItem>
-            <MenuItem value="Livro A">Livro A</MenuItem>
-            <MenuItem value="Livro B">Livro B</MenuItem>
-            <MenuItem value="Livro C">Livro C</MenuItem>
+            <MenuItem value=""><em>Selecione o material didático</em></MenuItem>
+            <MenuItem value="Livro A">Livro A - Básico</MenuItem>
+            <MenuItem value="Livro B">Livro B - Intermediário</MenuItem>
+            <MenuItem value="Livro C">Livro C - Avançado</MenuItem>
           </Select>
         </FormControl>
 

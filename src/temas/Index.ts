@@ -40,6 +40,22 @@ const theme = createTheme({
         },
       },
     },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          minWidth: '160px',
+        },
+      },
+    },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          '& .MuiSelect-root': {
+            minWidth: '160px',
+          },
+        },
+      },
+    },
   },
   
 });

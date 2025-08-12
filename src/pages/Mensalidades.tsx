@@ -338,27 +338,40 @@ export default function Mensalidades() {
       {/* Filtros */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={3}>
+          <Grid container spacing={3} alignItems="center">
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
-                label="Buscar"
+                label="Buscar por Aluno ou ID"
                 value={filtros.busca}
                 onChange={(e) => setFiltros(prev => ({ ...prev, busca: e.target.value }))}
                 InputProps={{
                   startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />
                 }}
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
+                }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '1.1rem' }}>Status da Mensalidade</InputLabel>
                 <Select
                   value={filtros.status}
-                  label="Status"
+                  label="Status da Mensalidade"
                   onChange={(e) => setFiltros(prev => ({ ...prev, status: e.target.value }))}
+                  sx={{ 
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '1rem',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
-                  <MenuItem value="">Todos</MenuItem>
+                  <MenuItem value="">
+                    <em>Todos os status</em>
+                  </MenuItem>
                   <MenuItem value="Pago">Pago</MenuItem>
                   <MenuItem value="Em aberto">Em aberto</MenuItem>
                   <MenuItem value="Vencido">Vencido</MenuItem>
@@ -366,57 +379,94 @@ export default function Mensalidades() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Aluno</InputLabel>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '1.1rem' }}>Filtrar por Aluno</InputLabel>
                 <Select
                   value={filtros.aluno}
-                  label="Aluno"
+                  label="Filtrar por Aluno"
                   onChange={(e) => setFiltros(prev => ({ ...prev, aluno: e.target.value }))}
+                  sx={{ 
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '1rem',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
-                  <MenuItem value="">Todos</MenuItem>
+                  <MenuItem value="">
+                    <em>Todos os alunos</em>
+                  </MenuItem>
                   {alunos.map(aluno => (
                     <MenuItem key={aluno.id} value={aluno.id.toString()}>
-                      {aluno.nome}
+                      {aluno.nome} - {aluno.nivel}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                label="Data Início"
-                type="date"
-                value={filtros.dataInicio}
-                onChange={(e) => setFiltros(prev => ({ ...prev, dataInicio: e.target.value }))}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                label="Data Fim"
-                type="date"
-                value={filtros.dataFim}
-                onChange={(e) => setFiltros(prev => ({ ...prev, dataFim: e.target.value }))}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={1}>
+            <Grid item xs={12} md={2}>
               <Button
                 fullWidth
                 variant="outlined"
                 onClick={limparFiltros}
                 startIcon={<ClearIcon />}
+                sx={{ 
+                  minHeight: '56px',
+                  fontSize: '1rem'
+                }}
               >
                 Limpar
               </Button>
             </Grid>
           </Grid>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {mensalidadesFiltradas.length} mensalidade(s) encontrada(s)
-          </Typography>
+          
+          {/* Filtros de Data */}
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="Data de Vencimento - Início"
+                type="date"
+                value={filtros.dataInicio}
+                onChange={(e) => setFiltros(prev => ({ ...prev, dataInicio: e.target.value }))}
+                InputLabelProps={{ shrink: true }}
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                label="Data de Vencimento - Fim"
+                type="date"
+                value={filtros.dataFim}
+                onChange={(e) => setFiltros(prev => ({ ...prev, dataFim: e.target.value }))}
+                InputLabelProps={{ shrink: true }}
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
+                }}
+              />
+            </Grid>
+          </Grid>
+          
+          {/* Botões de ação */}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              {mensalidadesFiltradas.length} registro(s)
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => abrirDialog()}
+              sx={{ ml: 2 }}
+            >
+              Cadastrar
+            </Button>
+          </Box>
         </CardContent>
       </Card>
 
@@ -526,15 +576,26 @@ export default function Mensalidades() {
           {mensalidadeEditando ? 'Editar Mensalidade' : 'Nova Mensalidade'}
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Aluno</InputLabel>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            {/* Campo Select Aluno - Largura Total */}
+            <Grid item xs={12}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '1.1rem' }}>Aluno e Responsável</InputLabel>
                 <Select
                   value={novaMensalidade.id_aluno || ''}
-                  label="Aluno"
+                  label="Aluno e Responsável"
                   onChange={(e) => setNovaMensalidade(prev => ({ ...prev, id_aluno: Number(e.target.value) }))}
+                  sx={{ 
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '1rem',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="">
+                    <em>Selecione um aluno</em>
+                  </MenuItem>
                   {alunos.map(aluno => (
                     <MenuItem key={aluno.id} value={aluno.id}>
                       {aluno.nome} - {aluno.nivel}
@@ -543,14 +604,53 @@ export default function Mensalidades() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Responsável</InputLabel>
+
+            {/* Campo Select Status - Largura Total */}
+            <Grid item xs={12}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '1.1rem' }}>Status da Mensalidade</InputLabel>
+                <Select
+                  value={novaMensalidade.status || ''}
+                  label="Status da Mensalidade"
+                  onChange={(e) => setNovaMensalidade(prev => ({ ...prev, status: e.target.value as any }))}
+                  sx={{ 
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '1rem',
+                      padding: '16px 14px'
+                    }
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>Selecione o status</em>
+                  </MenuItem>
+                  <MenuItem value="Pago">Pago</MenuItem>
+                  <MenuItem value="Em aberto">Em aberto</MenuItem>
+                  <MenuItem value="Vencido">Vencido</MenuItem>
+                  <MenuItem value="Negociado">Negociado</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Campo Select Responsável - Largura Total */}
+            <Grid item xs={12}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '1.1rem' }}>Responsável pelo Cadastro</InputLabel>
                 <Select
                   value={novaMensalidade.id_usuario || ''}
-                  label="Responsável"
+                  label="Responsável pelo Cadastro"
                   onChange={(e) => setNovaMensalidade(prev => ({ ...prev, id_usuario: Number(e.target.value) }))}
+                  sx={{ 
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '1rem',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="">
+                    <em>Selecione o responsável</em>
+                  </MenuItem>
                   {usuarios.map(usuario => (
                     <MenuItem key={usuario.id} value={usuario.id}>
                       {usuario.nome} - {usuario.tipo}
@@ -559,54 +659,39 @@ export default function Mensalidades() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4}>
+
+            {/* Campos de Data */}
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Data Emissão"
+                label="Data de Emissão"
                 type="date"
                 value={novaMensalidade.data_emissao || ''}
                 onChange={(e) => setNovaMensalidade(prev => ({ ...prev, data_emissao: e.target.value }))}
                 InputLabelProps={{ shrink: true }}
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
+                }}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Data Vencimento"
+                label="Data de Vencimento"
                 type="date"
                 value={novaMensalidade.data_vencimento || ''}
                 onChange={(e) => setNovaMensalidade(prev => ({ ...prev, data_vencimento: e.target.value }))}
                 InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={novaMensalidade.status || ''}
-                  label="Status"
-                  onChange={(e) => setNovaMensalidade(prev => ({ ...prev, status: e.target.value as any }))}
-                >
-                  <MenuItem value="Pago">Pago</MenuItem>
-                  <MenuItem value="Em aberto">Em aberto</MenuItem>
-                  <MenuItem value="Vencido">Vencido</MenuItem>
-                  <MenuItem value="Negociado">Negociado</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Valor da Mensalidade"
-                type="number"
-                value={novaMensalidade.valor_mensalidade || ''}
-                onChange={(e) => setNovaMensalidade(prev => ({ ...prev, valor_mensalidade: Number(e.target.value) }))}
-                InputProps={{
-                  startAdornment: <Typography sx={{ mr: 1 }}>R$</Typography>
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+
+            {/* Campos Numéricos */}
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Juros de Atraso (%)"
@@ -614,6 +699,26 @@ export default function Mensalidades() {
                 value={novaMensalidade.juros_atraso || ''}
                 onChange={(e) => setNovaMensalidade(prev => ({ ...prev, juros_atraso: Number(e.target.value) }))}
                 inputProps={{ step: 0.1, min: 0, max: 100 }}
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Valor da Mensalidade"
+                type="number"
+                value={novaMensalidade.valor_mensalidade || ''}
+                onChange={(e) => setNovaMensalidade(prev => ({ ...prev, valor_mensalidade: Number(e.target.value) }))}
+                InputProps={{
+                  startAdornment: <Typography sx={{ mr: 1, fontSize: '1rem' }}>R$</Typography>
+                }}
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
+                }}
               />
             </Grid>
           </Grid>

@@ -211,7 +211,7 @@ export default function Matriculas() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
                 label="Buscar"
@@ -220,17 +220,35 @@ export default function Matriculas() {
                 InputProps={{
                   startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />
                 }}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: '16px'
+                  }
+                }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
+            <Grid item xs={12} sm={6} md={3}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Status</InputLabel>
                 <Select
                   value={filtros.status}
                   label="Status"
                   onChange={(e) => setFiltros(prev => ({ ...prev, status: e.target.value }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
-                  <MenuItem value="">Todos</MenuItem>
+                  <MenuItem value="">
+                    <em>Todos</em>
+                  </MenuItem>
                   <MenuItem value="Ativo">Ativo</MenuItem>
                   <MenuItem value="Cancelado">Cancelado</MenuItem>
                   <MenuItem value="Trancado">Trancado</MenuItem>
@@ -258,7 +276,7 @@ export default function Matriculas() {
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
+            <Grid item xs={12} sm={6} md={1}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -268,12 +286,22 @@ export default function Matriculas() {
                 Limpar
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6} md={1}>
-              <Typography variant="body2" color="text.secondary">
-                {matriculasFiltradas.length} registro(s)
-              </Typography>
-            </Grid>
           </Grid>
+          
+          {/* Botões de ação */}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              {matriculasFiltradas.length} registro(s)
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => abrirDialog()}
+              sx={{ ml: 2 }}
+            >
+              Cadastrar
+            </Button>
+          </Box>
         </CardContent>
       </Card>
 
@@ -370,8 +398,8 @@ export default function Matriculas() {
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Aluno</InputLabel>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Aluno</InputLabel>
                 <Select
                   value={novaMatricula.id_aluno || ''}
                   label="Aluno"
@@ -380,7 +408,17 @@ export default function Matriculas() {
                     id_aluno: Number(e.target.value),
                     nome_aluno: alunos.find(a => a.id === Number(e.target.value))?.nome || ''
                   }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="">
+                    <em>Selecione um aluno</em>
+                  </MenuItem>
                   {alunos.map(aluno => (
                     <MenuItem key={aluno.id} value={aluno.id}>
                       {aluno.nome}
@@ -410,13 +448,23 @@ export default function Matriculas() {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Status</InputLabel>
                 <Select
                   value={novaMatricula.status || ''}
                   label="Status"
                   onChange={(e) => setNovaMatricula(prev => ({ ...prev, status: e.target.value as any }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="">
+                    <em>Selecione o status</em>
+                  </MenuItem>
                   <MenuItem value="Ativo">Ativo</MenuItem>
                   <MenuItem value="Cancelado">Cancelado</MenuItem>
                   <MenuItem value="Trancado">Trancado</MenuItem>
@@ -425,8 +473,8 @@ export default function Matriculas() {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Usuário</InputLabel>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Usuário</InputLabel>
                 <Select
                   value={novaMatricula.id_usuario || ''}
                   label="Usuário"
@@ -435,7 +483,17 @@ export default function Matriculas() {
                     id_usuario: Number(e.target.value),
                     nome_usuario: usuarios.find(u => u.id === Number(e.target.value))?.nome || ''
                   }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '16px',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="">
+                    <em>Selecione um usuário</em>
+                  </MenuItem>
                   {usuarios.map(usuario => (
                     <MenuItem key={usuario.id} value={usuario.id}>
                       {usuario.nome}

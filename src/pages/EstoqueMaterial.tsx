@@ -275,8 +275,9 @@ export default function EstoqueMaterial() {
       {/* Filtros */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={4}>
+          <Grid container spacing={3} alignItems="center">
+            {/* Campo de Busca */}
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Buscar Material"
@@ -285,55 +286,105 @@ export default function EstoqueMaterial() {
                 InputProps={{
                   startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />
                 }}
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
+                }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
+
+            {/* Campo Select Categoria - Maior */}
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '1.1rem' }}>Filtrar por Categoria</InputLabel>
+                <Select
+                  value={filtros.categoria}
+                  label="Filtrar por Categoria"
+                  onChange={(e) => setFiltros(prev => ({ ...prev, categoria: e.target.value }))}
+                  sx={{ 
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '1rem',
+                      padding: '16px 14px'
+                    }
+                  }}
+                >
+                  <MenuItem value="">Todas as categorias</MenuItem>
+                  <MenuItem value="Papelaria">Papelaria</MenuItem>
+                  <MenuItem value="Limpeza">Limpeza</MenuItem>
+                  <MenuItem value="Informática">Informática</MenuItem>
+                  <MenuItem value="Móveis">Móveis</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Campo Select Status - Maior */}
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '1.1rem' }}>Filtrar por Status</InputLabel>
                 <Select
                   value={filtros.status}
-                  label="Status"
+                  label="Filtrar por Status"
                   onChange={(e) => setFiltros(prev => ({ ...prev, status: e.target.value }))}
+                  sx={{ 
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      fontSize: '1rem',
+                      padding: '16px 14px'
+                    }
+                  }}
                 >
-                  <MenuItem value="">Todos</MenuItem>
-                  <MenuItem value="Em aberto">Em aberto</MenuItem>
-                  <MenuItem value="Atendido">Atendido</MenuItem>
-                  <MenuItem value="Parcial">Parcial</MenuItem>
+                  <MenuItem value="">Todos os status</MenuItem>
+                  <MenuItem value="Disponível">Disponível</MenuItem>
+                  <MenuItem value="Baixo Estoque">Baixo Estoque</MenuItem>
+                  <MenuItem value="Esgotado">Esgotado</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Localização</InputLabel>
-                <Select
-                  value={filtros.localizacao}
-                  label="Localização"
-                  onChange={(e) => setFiltros(prev => ({ ...prev, localizacao: e.target.value }))}
-                >
-                  <MenuItem value="">Todas</MenuItem>
-                  <MenuItem value="Almoxarifado">Almoxarifado</MenuItem>
-                  <MenuItem value="Secretaria">Secretaria</MenuItem>
-                  <MenuItem value="Coordenação">Coordenação</MenuItem>
-                  <MenuItem value="Sala dos Professores">Sala dos Professores</MenuItem>
-                </Select>
-              </FormControl>
+
+            {/* Campo Quantidade Mínima */}
+            <Grid item xs={12} md={5}>
+              <TextField
+                fullWidth
+                label="Quantidade Mínima"
+                type="number"
+                value={filtros.quantidadeMin}
+                onChange={(e) => setFiltros(prev => ({ ...prev, quantidadeMin: e.target.value }))}
+                sx={{ 
+                  '& .MuiInputBase-root': { minHeight: '56px' },
+                  '& .MuiInputLabel-root': { fontSize: '1.1rem' }
+                }}
+              />
             </Grid>
-            <Grid item xs={12} sm={6} md={1}>
+
+            {/* Botão Limpar */}
+            <Grid item xs={12} md={7}>
               <Button
                 fullWidth
                 variant="outlined"
                 onClick={limparFiltros}
                 startIcon={<ClearIcon />}
+                sx={{ minHeight: '56px' }}
               >
-                Limpar
+                Limpar Filtros
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6} md={1}>
-              <Typography variant="body2" color="text.secondary">
-                {materiaisFiltrados.length} item(s)
-              </Typography>
-            </Grid>
           </Grid>
+          
+          {/* Botões de ação */}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              {materiaisFiltrados.length} registro(s)
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => abrirDialog()}
+              sx={{ ml: 2 }}
+            >
+              Cadastrar
+            </Button>
+          </Box>
         </CardContent>
       </Card>
 
@@ -433,32 +484,54 @@ export default function EstoqueMaterial() {
           {materialEditando ? 'Editar Material' : 'Novo Material'}
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Material"
                 value={novoMaterial.material || ''}
                 onChange={(e) => setNovoMaterial(prev => ({ ...prev, material: e.target.value }))}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  }
+                }}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="Quantidade"
                 type="number"
                 value={novoMaterial.quantidade || ''}
                 onChange={(e) => setNovoMaterial(prev => ({ ...prev, quantidade: Number(e.target.value) }))}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    minHeight: '56px',
+                    fontSize: '16px'
+                  }
+                }}
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <FormControl fullWidth>
-                <InputLabel>Unidade</InputLabel>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Unidade</InputLabel>
                 <Select
                   value={novoMaterial.unidade || ''}
                   label="Unidade"
                   onChange={(e) => setNovoMaterial(prev => ({ ...prev, unidade: e.target.value }))}
+                  sx={{
+                    minHeight: '56px',
+                    fontSize: '16px',
+                    '& .MuiSelect-select': {
+                      padding: '16.5px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="" disabled>
+                    <em>Selecione uma unidade</em>
+                  </MenuItem>
                   {unidades.map(unidade => (
                     <MenuItem key={unidade} value={unidade}>
                       {unidade}
@@ -467,14 +540,24 @@ export default function EstoqueMaterial() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={8}>
-              <FormControl fullWidth>
-                <InputLabel>Localização</InputLabel>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Localização</InputLabel>
                 <Select
                   value={novoMaterial.localizacao || ''}
                   label="Localização"
                   onChange={(e) => setNovoMaterial(prev => ({ ...prev, localizacao: e.target.value }))}
+                  sx={{
+                    minHeight: '56px',
+                    fontSize: '16px',
+                    '& .MuiSelect-select': {
+                      padding: '16.5px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="" disabled>
+                    <em>Selecione uma localização</em>
+                  </MenuItem>
                   {localizacoes.map(localizacao => (
                     <MenuItem key={localizacao} value={localizacao}>
                       {localizacao}
@@ -483,14 +566,24 @@ export default function EstoqueMaterial() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth size="medium">
+                <InputLabel sx={{ fontSize: '16px' }}>Status</InputLabel>
                 <Select
                   value={novoMaterial.status_pedido || ''}
                   label="Status"
                   onChange={(e) => setNovoMaterial(prev => ({ ...prev, status_pedido: e.target.value as any }))}
+                  sx={{
+                    minHeight: '56px',
+                    fontSize: '16px',
+                    '& .MuiSelect-select': {
+                      padding: '16.5px 14px'
+                    }
+                  }}
                 >
+                  <MenuItem value="" disabled>
+                    <em>Selecione um status</em>
+                  </MenuItem>
                   <MenuItem value="Em aberto">Em aberto</MenuItem>
                   <MenuItem value="Atendido">Atendido</MenuItem>
                   <MenuItem value="Parcial">Parcial</MenuItem>
@@ -505,6 +598,11 @@ export default function EstoqueMaterial() {
                 rows={3}
                 value={novoMaterial.observacao || ''}
                 onChange={(e) => setNovoMaterial(prev => ({ ...prev, observacao: e.target.value }))}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontSize: '16px'
+                  }
+                }}
               />
             </Grid>
           </Grid>

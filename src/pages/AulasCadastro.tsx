@@ -71,15 +71,22 @@ export default function AulasCadastro() {
           
           <Stack spacing={2}>
             <Grid container spacing={2}>
-              <Grid size={{xs:12, sm:6}}>
-                <FormControl fullWidth required>
-                  <InputLabel>Turma</InputLabel>
+              <Grid size={{xs:12, md:8}}>
+                <FormControl fullWidth required size="medium">
+                  <InputLabel sx={{ fontSize: '16px' }}>Turma / Nível de Ensino</InputLabel>
                   <Select
                     value={aula.turmas_id}
                     onChange={(e) => handleChange("turmas_id", e.target.value)}
-                    label="Turma"
+                    label="Turma / Nível de Ensino"
+                    sx={{
+                      minHeight: '56px',
+                      fontSize: '16px',
+                      '& .MuiSelect-select': {
+                        padding: '16.5px 14px'
+                      }
+                    }}
                   >
-                    <MenuItem value=""><em>Selecione</em></MenuItem>
+                    <MenuItem value=""><em>Selecione a turma</em></MenuItem>
                     {turmas.map((turma) => (
                       <MenuItem key={turma.id} value={turma.id}>
                         {turma.nome}
@@ -88,24 +95,47 @@ export default function AulasCadastro() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid size={{xs:12, sm:6}}>
-                <FormControl fullWidth required>
-                  <InputLabel>Professor</InputLabel>
-                  <Select
-                    value={aula.professores_id}
-                    onChange={(e) => handleChange("professores_id", e.target.value)}
-                    label="Professor"
-                  >
-                    <MenuItem value=""><em>Selecione</em></MenuItem>
-                    {professores.map((professor) => (
-                      <MenuItem key={professor.id} value={professor.id}>
-                        {professor.nome}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+              <Grid size={{xs:12, md:4}}>
+                <TextField
+                  label="Número da Aula"
+                  type="number"
+                  value={aula.aulas}
+                  onChange={(e) => handleChange("aulas", e.target.value)}
+                  fullWidth
+                  required
+                  inputProps={{ min: 1 }}
+                  sx={{
+                    '& .MuiInputBase-root': {
+                      minHeight: '56px',
+                      fontSize: '16px'
+                    }
+                  }}
+                />
               </Grid>
             </Grid>
+
+            <FormControl fullWidth required size="medium">
+              <InputLabel sx={{ fontSize: '16px' }}>Professor Responsável</InputLabel>
+              <Select
+                value={aula.professores_id}
+                onChange={(e) => handleChange("professores_id", e.target.value)}
+                label="Professor Responsável"
+                sx={{
+                  minHeight: '56px',
+                  fontSize: '16px',
+                  '& .MuiSelect-select': {
+                    padding: '16.5px 14px'
+                  }
+                }}
+              >
+                <MenuItem value=""><em>Selecione o professor</em></MenuItem>
+                {professores.map((professor) => (
+                  <MenuItem key={professor.id} value={professor.id}>
+                    {professor.nome}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <Grid container spacing={2}>
               <Grid size={{xs:12, sm:4}}>
@@ -148,18 +178,7 @@ export default function AulasCadastro() {
             </Grid>
 
             <Grid container spacing={2}>
-              <Grid size={{xs:12, sm:6}}>
-                <TextField
-                  label="Número da Aula"
-                  type="number"
-                  value={aula.aulas}
-                  onChange={(e) => handleChange("aulas", e.target.value)}
-                  fullWidth
-                  required
-                  inputProps={{ min: 1 }}
-                />
-              </Grid>
-              <Grid size={{xs:12, sm:6}}>
+              <Grid size={{xs:12, sm:12}}>
                 <Box display="flex" alignItems="center" height="100%">
                   <FormControlLabel
                     control={
@@ -168,7 +187,7 @@ export default function AulasCadastro() {
                         onChange={(e) => handleChange("ativo", e.target.checked)}
                       />
                     }
-                    label="Ativo?"
+                    label="Aula Ativa?"
                   />
                 </Box>
               </Grid>

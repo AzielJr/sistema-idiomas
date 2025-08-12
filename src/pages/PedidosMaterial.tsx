@@ -312,7 +312,7 @@ export default function PedidosMaterial() {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
                 label="Buscar"
@@ -332,50 +332,33 @@ export default function PedidosMaterial() {
                   onChange={(e) => setFiltros(prev => ({ ...prev, status: e.target.value }))}
                 >
                   <MenuItem value="">Todos</MenuItem>
-                  <MenuItem value="Pendente">Pendente</MenuItem>
+                  <MenuItem value="Em aberto">Em aberto</MenuItem>
                   <MenuItem value="Atendido">Atendido</MenuItem>
-                  <MenuItem value="Negado">Negado</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Usuário</InputLabel>
-                <Select
-                  value={filtros.usuario}
-                  label="Usuário"
-                  onChange={(e) => setFiltros(prev => ({ ...prev, usuario: e.target.value }))}
-                >
-                  <MenuItem value="">Todos</MenuItem>
-                  {usuarios.map(usuario => (
-                    <MenuItem key={usuario.id} value={usuario.id.toString()}>
-                      {usuario.nome}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="Parcial">Parcial</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
               <TextField
                 fullWidth
-                label="Data Início"
+                label="Data Inicial"
                 type="date"
-                value={filtros.dataInicio}
-                onChange={(e) => setFiltros(prev => ({ ...prev, dataInicio: e.target.value }))}
+                value={filtros.dataInicial}
+                onChange={(e) => setFiltros(prev => ({ ...prev, dataInicial: e.target.value }))}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
               <TextField
                 fullWidth
-                label="Data Fim"
+                label="Data Final"
                 type="date"
-                value={filtros.dataFim}
-                onChange={(e) => setFiltros(prev => ({ ...prev, dataFim: e.target.value }))}
+                value={filtros.dataFinal}
+                onChange={(e) => setFiltros(prev => ({ ...prev, dataFinal: e.target.value }))}
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={1}>
+            <Grid item xs={12} sm={6} md={2}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -386,9 +369,21 @@ export default function PedidosMaterial() {
               </Button>
             </Grid>
           </Grid>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            {pedidosFiltrados.length} pedido(s) encontrado(s)
-          </Typography>
+          
+          {/* Botões de ação */}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              {pedidosFiltrados.length} registro(s)
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => abrirDialog()}
+              sx={{ ml: 2 }}
+            >
+              Cadastrar
+            </Button>
+          </Box>
         </CardContent>
       </Card>
 

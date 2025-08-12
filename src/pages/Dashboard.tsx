@@ -65,11 +65,26 @@ export default function Dashboard() {
     <Box sx={{ 
       p: { xs: 2, md: 3 }, 
       width: '100%',
-      backgroundColor: '#f5f7fa',
-      minHeight: '100vh'
+      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+      minHeight: '100vh',
+      position: 'relative',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: `
+          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.03) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(120, 119, 198, 0.02) 0%, transparent 50%)
+        `,
+        pointerEvents: 'none'
+      }
     }}>
       {/* Header do Dashboard */}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 4, position: 'relative', zIndex: 1 }}>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
           Dashboard
         </Typography>
@@ -85,7 +100,9 @@ export default function Dashboard() {
         mx: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        gap: 3
+        gap: 3,
+        position: 'relative',
+        zIndex: 1
       }}>
         
         {/* BLOCO 1: Cards de Estatísticas Principais */}
@@ -246,7 +263,16 @@ export default function Dashboard() {
         {/* BLOCO 2: Métricas Secundárias */}
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={0} sx={{ p: 3, backgroundColor: 'white', borderRadius: 3, border: '1px solid #e8eaed' }}>
+            <Card elevation={0} sx={{ 
+              height: '160px',
+              p: 3, 
+              backgroundColor: 'white', 
+              borderRadius: 3, 
+              border: '1px solid #e8eaed',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
                   Matrículas
@@ -268,7 +294,16 @@ export default function Dashboard() {
           </Grid>
           
           <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={0} sx={{ p: 3, backgroundColor: 'white', borderRadius: 3, border: '1px solid #e8eaed' }}>
+            <Card elevation={0} sx={{ 
+              height: '160px',
+              p: 3, 
+              backgroundColor: 'white', 
+              borderRadius: 3, 
+              border: '1px solid #e8eaed',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
                   Pagamentos
@@ -291,7 +326,16 @@ export default function Dashboard() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={0} sx={{ p: 3, backgroundColor: 'white', borderRadius: 3, border: '1px solid #e8eaed' }}>
+            <Card elevation={0} sx={{ 
+              height: '160px',
+              p: 3, 
+              backgroundColor: 'white', 
+              borderRadius: 3, 
+              border: '1px solid #e8eaed',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
                   Pendências
@@ -314,7 +358,16 @@ export default function Dashboard() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Card elevation={0} sx={{ p: 3, backgroundColor: 'white', borderRadius: 3, border: '1px solid #e8eaed' }}>
+            <Card elevation={0} sx={{ 
+              height: '160px',
+              p: 3, 
+              backgroundColor: 'white', 
+              borderRadius: 3, 
+              border: '1px solid #e8eaed',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
                   Ativos
@@ -337,141 +390,258 @@ export default function Dashboard() {
           </Grid>
         </Grid>
 
-        {/* BLOCO 3: Gráficos e Relatórios */}
+        {/* BLOCO 3: Dashboard Completamente Novo - Alinhamento Perfeito */}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
-            <Card elevation={0} sx={{ p: 4, backgroundColor: 'white', borderRadius: 3, border: '1px solid #e8eaed' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a', mb: 1 }}>
-                    Distribuição por Nível
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Alunos matriculados por nível de ensino
-                  </Typography>
+          {/* Gráfico de Barras - Exatamente 6 colunas */}
+          <Grid item xs={12} lg={6}>
+            <Card elevation={0} sx={{ 
+              height: '420px',
+              background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+              border: '1px solid #e1f5fe',
+              borderRadius: 3,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
+            }}>
+              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 4 }}>
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 'bold', 
+                  color: '#0d47a1',
+                  textAlign: 'center',
+                  mb: 3,
+                  fontSize: '1.2rem'
+                }}>
+                  📊 Distribuição de Alunos por Nível
+                </Typography>
+                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <BarChart data={dadosBarras} />
                 </Box>
-                <IconButton size="small">
-                  <MoreVert />
-                </IconButton>
-              </Box>
-              <Box sx={{ height: '320px' }}>
-                <BarChart data={dadosBarras} />
-              </Box>
+              </CardContent>
             </Card>
           </Grid>
 
-          <Grid item xs={12} md={4}>
-            <Card elevation={0} sx={{ p: 4, backgroundColor: 'white', borderRadius: 3, border: '1px solid #e8eaed' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a', mb: 1 }}>
-                    Faixa Etária
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Distribuição por idade
-                  </Typography>
+          {/* Gráfico de Rosca - Exatamente 3 colunas */}
+          <Grid item xs={12} lg={3}>
+            <Card elevation={0} sx={{ 
+              height: '420px',
+              background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
+              border: '1px solid #f8bbd9',
+              borderRadius: 3,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
+            }}>
+              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 4 }}>
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 'bold', 
+                  color: '#4a148c',
+                  textAlign: 'center',
+                  mb: 3,
+                  fontSize: '1.2rem'
+                }}>
+                  🎂 Faixa Etária
+                </Typography>
+                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <RoscaChart data={dadosRosca} />
                 </Box>
-                <IconButton size="small">
-                  <MoreVert />
-                </IconButton>
-              </Box>
-              <Box sx={{ height: '320px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <RoscaChart data={dadosRosca} />
-              </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Comentários - Exatamente 3 colunas */}
+          <Grid item xs={12} lg={3}>
+            <Card elevation={0} sx={{ 
+              height: '420px',
+              background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+              border: '1px solid #ffcc02',
+              borderRadius: 3,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
+            }}>
+              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                  <Typography variant="h6" sx={{ 
+                    fontWeight: 'bold', 
+                    color: '#e65100',
+                    fontSize: '1.2rem'
+                  }}>
+                    💬 Comentários
+                  </Typography>
+                  <Chip label="3 novos" size="small" sx={{ bgcolor: '#ff9800', color: 'white' }} />
+                </Box>
+                <Box sx={{ 
+                  flexGrow: 1, 
+                  overflow: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    background: '#f1f1f1',
+                    borderRadius: '10px',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: '#ff9800',
+                    borderRadius: '10px',
+                  },
+                }}>
+                  <ListaComentarios />
+                </Box>
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
 
-        {/* BLOCO 4: Comunicações */}
+        {/* BLOCO 4: Avisos Importantes - Largura Total Redesenhada */}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Card elevation={0} sx={{ p: 4, backgroundColor: 'white', borderRadius: 3, border: '1px solid #e8eaed' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a', mb: 1 }}>
-                    Comentários Recentes
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Feedback dos alunos
-                  </Typography>
-                </Box>
-                <Chip label="3 novos" size="small" color="primary" />
-              </Box>
-              <Box sx={{ height: '320px', overflow: 'auto' }}>
-                <ListaComentarios />
-              </Box>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Card elevation={0} sx={{ p: 4, backgroundColor: 'white', borderRadius: 3, border: '1px solid #e8eaed' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a', mb: 1 }}>
-                    Avisos Importantes
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Comunicados da coordenação
-                  </Typography>
-                </Box>
-                <Notifications color="primary" />
-              </Box>
-              <Box sx={{ p: 0 }}>
-                <Box sx={{ px: 0, py: 2, borderBottom: '1px solid #f5f5f5', display: 'flex', alignItems: 'flex-start' }}>
-                  <Box sx={{ 
-                    width: 8, 
-                    height: 8, 
-                    borderRadius: '50%', 
-                    bgcolor: '#1976d2', 
-                    mr: 2, 
-                    mt: 1 
-                  }} />
-                  <Box>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      Reunião pedagógica - 15/12
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Todos os professores devem participar
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ px: 0, py: 2, borderBottom: '1px solid #f5f5f5', display: 'flex', alignItems: 'flex-start' }}>
-                  <Box sx={{ 
-                    width: 8, 
-                    height: 8, 
-                    borderRadius: '50%', 
-                    bgcolor: '#ed6c02', 
-                    mr: 2, 
-                    mt: 1 
-                  }} />
-                  <Box>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      Recesso de fim de ano
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Aulas suspensas de 20/12 a 05/01
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ px: 0, py: 2, display: 'flex', alignItems: 'flex-start' }}>
-                  <Box sx={{ 
-                    width: 8, 
-                    height: 8, 
-                    borderRadius: '50%', 
-                    bgcolor: '#2e7d32', 
-                    mr: 2, 
-                    mt: 1 
-                  }} />
-                  <Box>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      Nova turma de alemão
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Inscrições abertas até 30/11
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
+          <Grid item xs={12}>
+            <Card elevation={0} sx={{ 
+              background: 'linear-gradient(135deg, #ffebee 0%, #f8bbd9 100%)',
+              border: '1px solid #f48fb1',
+              borderRadius: 3,
+              boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
+            }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h6" sx={{ 
+                  fontWeight: 'bold', 
+                  color: '#c2185b', 
+                  mb: 4,
+                  textAlign: 'center',
+                  fontSize: '1.3rem'
+                }}>
+                  🚨 Avisos Importantes
+                </Typography>
+                
+                {/* Grid interno com 3 colunas perfeitamente alinhadas */}
+                <Grid container spacing={3}>
+                  <Grid item xs={12} lg={4}>
+                    <Box sx={{ 
+                      p: 3, 
+                      bgcolor: 'rgba(255,255,255,0.95)', 
+                      borderRadius: 3,
+                      border: '2px solid rgba(194, 24, 91, 0.2)',
+                      minHeight: '140px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                      transition: 'transform 0.2s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 6px 12px rgba(0,0,0,0.15)'
+                      }
+                    }}>
+                      <Typography variant="subtitle1" sx={{ 
+                        fontWeight: 'bold', 
+                        color: '#c2185b',
+                        fontSize: '1.1rem',
+                        mb: 1
+                      }}>
+                        📢 Reunião pedagógica - 15/12
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: '#880e4f', 
+                        flexGrow: 1, 
+                        mt: 1,
+                        lineHeight: 1.4,
+                        fontSize: '0.9rem'
+                      }}>
+                        Todos os professores devem participar
+                      </Typography>
+                      <Typography variant="caption" sx={{ 
+                        color: '#ad1457', 
+                        mt: 2,
+                        fontWeight: 'bold',
+                        fontSize: '0.8rem'
+                      }}>
+                        📅 Obrigatório
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} lg={4}>
+                    <Box sx={{ 
+                      p: 3, 
+                      bgcolor: 'rgba(255,255,255,0.95)', 
+                      borderRadius: 3,
+                      border: '2px solid rgba(194, 24, 91, 0.2)',
+                      minHeight: '140px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                      transition: 'transform 0.2s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 6px 12px rgba(0,0,0,0.15)'
+                      }
+                    }}>
+                      <Typography variant="subtitle1" sx={{ 
+                        fontWeight: 'bold', 
+                        color: '#c2185b',
+                        fontSize: '1.1rem',
+                        mb: 1
+                      }}>
+                        📢 Recesso de fim de ano
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: '#880e4f', 
+                        flexGrow: 1, 
+                        mt: 1,
+                        lineHeight: 1.4,
+                        fontSize: '0.9rem'
+                      }}>
+                        Aulas suspensas de 20/12 a 05/01
+                      </Typography>
+                      <Typography variant="caption" sx={{ 
+                        color: '#ad1457', 
+                        mt: 2,
+                        fontWeight: 'bold',
+                        fontSize: '0.8rem'
+                      }}>
+                        📅 Período de férias
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} lg={4}>
+                    <Box sx={{ 
+                      p: 3, 
+                      bgcolor: 'rgba(255,255,255,0.95)', 
+                      borderRadius: 3,
+                      border: '2px solid rgba(194, 24, 91, 0.2)',
+                      minHeight: '140px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                      transition: 'transform 0.2s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 6px 12px rgba(0,0,0,0.15)'
+                      }
+                    }}>
+                      <Typography variant="subtitle1" sx={{ 
+                        fontWeight: 'bold', 
+                        color: '#c2185b',
+                        fontSize: '1.1rem',
+                        mb: 1
+                      }}>
+                        📢 Nova turma de alemão
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: '#880e4f', 
+                        flexGrow: 1, 
+                        mt: 1,
+                        lineHeight: 1.4,
+                        fontSize: '0.9rem'
+                      }}>
+                        Inscrições abertas até 30/11
+                      </Typography>
+                      <Typography variant="caption" sx={{ 
+                        color: '#ad1457', 
+                        mt: 2,
+                        fontWeight: 'bold',
+                        fontSize: '0.8rem'
+                      }}>
+                        📅 Vagas limitadas
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
