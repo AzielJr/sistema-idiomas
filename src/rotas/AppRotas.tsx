@@ -23,6 +23,13 @@ import Unidade from "../pages/Unidade";
 import GruposAcesso from "../pages/GruposAcesso";
 import Usuarios from "../pages/Usuarios";
 import LogSistema from "../pages/LogSistema"; 
+import Matriculas from "../pages/Matriculas";
+import Solicitacoes from "../pages/Solicitacoes";
+import EstoqueMaterial from "../pages/EstoqueMaterial";
+import PedidosMaterial from "../pages/PedidosMaterial";
+import Mensalidades from "../pages/Mensalidades";
+import Despesas from "../pages/Despesas";
+import TiposDespesa from "../pages/TiposDespesa";
 
 export default function AppRotas(){
     return(
@@ -68,6 +75,17 @@ export default function AppRotas(){
                 <Route path="/administracao/grupos-acesso" element={<GruposAcesso />} />
                 <Route path="/administracao/usuarios" element={<Usuarios />} />
                 <Route path="/administracao/log-sistema" element={<LogSistema />} />
+                
+                {/* Rotas Secretaria e ADM */}
+                <Route path="/secretaria-adm/matriculas" element={<Matriculas />} />
+                <Route path="/secretaria-adm/solicitacoes" element={<Solicitacoes />} />
+                <Route path="/secretaria-adm/estoque-material" element={<EstoqueMaterial />} />
+                <Route path="/secretaria-adm/pedidos-material" element={<PedidosMaterial />} />
+                
+                {/* Rotas Financeiro */}
+                <Route path="/financeiro/mensalidades" element={<Mensalidades />} />
+                <Route path="/financeiro/despesas" element={<Despesas />} />
+                <Route path="/financeiro/tipos-despesa" element={<TiposDespesa />} />
             </Route>
             <Route path="*" element={<Navigate to = "/"/>}></Route>
         </Routes>

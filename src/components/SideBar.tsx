@@ -21,7 +21,8 @@ type Secoes =
   | "Cadastros"
   | "Mov"
   | "Projetos"
-  | "Secretaria"
+  | "SecretariaAdm"
+  | "Financeiro"
   | "Administracao"
   | "Agenda"
   | "Logout";
@@ -36,7 +37,8 @@ export default function SideBar({mobileOpen=false, onClose, variant="permanent"}
     Cadastros: false,
     Mov: false,
     Projetos: false,
-    Secretaria: false,
+    SecretariaAdm: false,
+    Financeiro: false,
     Administracao: false,
     Agenda: false,
     Logout: false
@@ -50,7 +52,8 @@ export default function SideBar({mobileOpen=false, onClose, variant="permanent"}
         Cadastros: false,
         Mov: false,
         Projetos: false,
-        Secretaria: false,
+        SecretariaAdm: false,
+        Financeiro: false,
         Administracao: false,
         Agenda: false,
         Logout: false,
@@ -175,13 +178,22 @@ export default function SideBar({mobileOpen=false, onClose, variant="permanent"}
               ]
             },
             {
-              secao: "Secretaria",
-              label: "Secretaria",
+              secao: "SecretariaAdm",
+              label: "Secretaria e ADM",
               items: [
-                { text: "Matrículas", path: "/secretaria/matriculas" },
-                { text: "Solicitações", path: "/secretaria/solicitacoes" },
-                { text: "Mensalidades", path: "/secretaria/mensalidades" },
-                { text: "Comunicados", path: "/secretaria/comunicados" }
+                { text: "Matrículas", path: "/secretaria-adm/matriculas" },
+                { text: "Solicitações", path: "/secretaria-adm/solicitacoes" },
+                { text: "Estoque Material ADM", path: "/secretaria-adm/estoque-material" },
+                { text: "Pedidos Material", path: "/secretaria-adm/pedidos-material" }
+              ]
+            },
+            {
+              secao: "Financeiro",
+              label: "Financeiro",
+              items: [
+                { text: "Mensalidades", path: "/financeiro/mensalidades" },
+                { text: "Despesas", path: "/financeiro/despesas" },
+                { text: "Tipos de Despesa", path: "/financeiro/tipos-despesa" }
               ]
             },
             {
