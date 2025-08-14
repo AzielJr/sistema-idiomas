@@ -390,10 +390,10 @@ export default function Dashboard() {
           </Grid>
         </Grid>
 
-        {/* BLOCO 3: Dashboard Completamente Novo - Alinhamento Perfeito */}
+        {/* BLOCO 3: Dashboard Perfeitamente Alinhado */}
         <Grid container spacing={3}>
-          {/* Gráfico de Barras - Exatamente 6 colunas */}
-          <Grid item xs={12} lg={6}>
+          {/* Gráfico de Barras - 40% da largura */}
+          <Grid item xs={12} md={5}>
             <Card elevation={0} sx={{ 
               height: '420px',
               background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
@@ -401,13 +401,13 @@ export default function Dashboard() {
               borderRadius: 3,
               boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
             }}>
-              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 4 }}>
+              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 3 }}>
                 <Typography variant="h6" sx={{ 
                   fontWeight: 'bold', 
                   color: '#0d47a1',
                   textAlign: 'center',
-                  mb: 3,
-                  fontSize: '1.2rem'
+                  mb: 2,
+                  fontSize: '1.1rem'
                 }}>
                   📊 Distribuição de Alunos por Nível
                 </Typography>
@@ -418,8 +418,8 @@ export default function Dashboard() {
             </Card>
           </Grid>
 
-          {/* Gráfico de Rosca - Exatamente 3 colunas */}
-          <Grid item xs={12} lg={3}>
+          {/* Gráfico de Rosca - 35% da largura */}
+          <Grid item xs={12} md={4}>
             <Card elevation={0} sx={{ 
               height: '420px',
               background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
@@ -427,25 +427,25 @@ export default function Dashboard() {
               borderRadius: 3,
               boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
             }}>
-              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 4 }}>
+              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 3 }}>
                 <Typography variant="h6" sx={{ 
                   fontWeight: 'bold', 
                   color: '#4a148c',
                   textAlign: 'center',
-                  mb: 3,
-                  fontSize: '1.2rem'
+                  mb: 2,
+                  fontSize: '1.1rem'
                 }}>
                   🎂 Faixa Etária
                 </Typography>
-                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
                   <RoscaChart data={dadosRosca} />
                 </Box>
               </CardContent>
             </Card>
           </Grid>
 
-          {/* Comentários - Exatamente 3 colunas */}
-          <Grid item xs={12} lg={3}>
+          {/* Comentários - 25% da largura */}
+          <Grid item xs={12} md={3}>
             <Card elevation={0} sx={{ 
               height: '420px',
               background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',

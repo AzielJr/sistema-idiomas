@@ -15,6 +15,7 @@ import {
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon
 } from "@mui/icons-material";
+import { useAuth } from '../contexts/AuthContext';
 
 type Secoes =
   | "Dashboard"
@@ -44,6 +45,12 @@ export default function SideBar({mobileOpen=false, onClose, variant="permanent"}
     Logout: false
   });
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/login';
+  };
 
   const alterarExpandir = (secao: Secoes) => {
     setExpandir((prev) => {
@@ -261,6 +268,7 @@ export default function SideBar({mobileOpen=false, onClose, variant="permanent"}
 
           <ListItemButton
             sx={itemStyle}
+            onClick={handleLogout}
           >
             <ListItemText primary="Logout" />
           </ListItemButton>

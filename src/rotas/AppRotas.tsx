@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import LayoutPrincipal from "../components/LayoutPrincipal";
-import Dashboard from "../pages/Dashboard";
+import ProtectedRoute from "../components/ProtectedRoute";
+import Login from "../pages/Login";
+import DashboardNovo from "../pages/DashboardNovo";
 import Cadastros from "../pages/Cadastros";
 import Mov from "../pages/Mov";
 import Projetos from "../pages/Projetos";
@@ -34,9 +36,17 @@ import TiposDespesa from "../pages/TiposDespesa";
 export default function AppRotas(){
     return(
         <Routes>
-            <Route path="/" element={<LayoutPrincipal/>}>
-                <Route index element={<Dashboard/>}></Route>
-                <Route path = "dashboard/default" element={<Dashboard/>}></Route>
+            {/* Rota de Login */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Rotas Protegidas */}
+            <Route path="/" element={
+                <ProtectedRoute>
+                    <LayoutPrincipal/>
+                </ProtectedRoute>
+            }>
+                <Route index element={<DashboardNovo/>}></Route>
+                <Route path = "dashboard/default" element={<DashboardNovo/>}></Route>
                 <Route path = "cadastros/default" element={<Cadastros/>}></Route>
                 <Route path = "mov/default" element={<Mov/>}></Route>
                 <Route path = "projetos/default" element={<Projetos/>}></Route>
@@ -87,7 +97,9 @@ export default function AppRotas(){
                 <Route path="/financeiro/despesas" element={<Despesas />} />
                 <Route path="/financeiro/tipos-despesa" element={<TiposDespesa />} />
             </Route>
-            <Route path="*" element={<Navigate to = "/"/>}></Route>
+            
+            {/* Redirecionamento padrão */}
+            <Route path="*" element={<Navigate to = "/login"/>}></Route>
         </Routes>
     )
 }

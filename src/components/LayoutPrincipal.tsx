@@ -1,18 +1,42 @@
-import { AppBar, Box, CssBaseline, IconButton, Toolbar, Typography, Container, Avatar } from "@mui/material";
+import { AppBar, Box, CssBaseline, IconButton, Toolbar, Typography, Container, Avatar, Button, Menu, MenuItem } from "@mui/material";
 import SideBar from "./SideBar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import logoSvg from '../assets/logo.svg';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function LayoutPrincipal() {
     // Estado para controlar a abertura do menu em dispositivos móveis
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
     
     // Função para alternar a abertura do menu em dispositivos móveis
     const drawerToggle = () => {
         setMobileOpen(!mobileOpen);
+    };
+    
+    // Função para abrir menu do usuário
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    
+    // Função para fechar menu do usuário
+    const handleUserMenuClose = () => {
+        setAnchorEl(null);
+    };
+    
+    // Função para fazer logout
+    const handleLogout = () => {
+        handleUserMenuClose();
+        logout();
+        // Forçar redirecionamento para login
+        window.location.href = '/login';
     };
     return (
         <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -86,12 +110,46 @@ export default function LayoutPrincipal() {
                     
                     {/* Usuário logado */}
                     <Box display="flex" alignItems="center" gap={2}>
-                        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                            <PersonIcon />
-                        </Avatar>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                            Usuário Logado
-                        </Typography>
+                        <Button
+                            onClick={handleUserMenuOpen}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                textTransform: 'none',
+                                color: 'text.primary',
+                                '&:hover': {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                                }
+                            }}
+                        >
+                            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+                                <PersonIcon />
+                            </Avatar>
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                {user?.name || 'Usuário'}
+                            </Typography>
+                            <ExpandMoreIcon />
+                        </Button>
+                        
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleUserMenuClose}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                        >
+                            <MenuItem onClick={handleLogout}>
+                                <LogoutIcon sx={{ mr: 1 }} />
+                                Sair do Sistema
+                            </MenuItem>
+                        </Menu>
                     </Box>
                 </Toolbar>
             </AppBar>

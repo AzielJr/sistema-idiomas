@@ -7,7 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Fab,
+  Divider,
   Grid,
   IconButton,
   MenuItem,
@@ -18,13 +18,16 @@ import {
   FormControl,
   InputLabel,
   Chip,
-  Alert,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Stack,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -34,143 +37,170 @@ import {
   Person as PersonIcon,
   Event as EventIcon,
   Description as DescriptionIcon,
-  CloudUpload as CloudUploadIcon,
-  Feedback as FeedbackIcon
+  Save as SaveIcon,
+  Print as PrintIcon,
+  ExpandMore as ExpandMoreIcon,
+  AccessTime as AccessTimeIcon,
+  Assignment as AssignmentIcon,
+  EmojiObjects as EmojiObjectsIcon,
+  CheckCircle as CheckCircleIcon,
+  Visibility as VisibilityIcon,
+  Cancel as CancelIcon
 } from "@mui/icons-material";
 import { useState } from "react";
 import PageHeader from "../components/PageHeader";
 
 interface PlanoAula {
   id: number;
-  professores_id: number;
-  turmas_id: number;
-  data_aula: string;
-  tipo_modelo: string;
-  arquivo_url: string;
-  detalhes: string;
-  data_envio: string;
-  feedback: string;
-  // Campos auxiliares para exibição
-  professor_nome?: string;
-  turma_nome?: string;
+  // Cabeçalho inicial
+  lesson_plan: string;
+  main_aim: string;
+  subsidiary_aim: string;
+  professor: string;
+  data: string;
+  hora: string;
+  // Estágios da aula
+  warm_up: EstagioAula;
+  lead_in: EstagioAula;
+  controlled_practice_1: EstagioAula;
+  clarification: EstagioAula;
+  controlled_practice_2: EstagioAula;
+  semi_controlled: EstagioAula;
+  free_practice: EstagioAula;
+  further_practice: EstagioAula;
+  extra_15_minutes: EstagioAula;
+  // Metadados
+  data_criacao: string;
+  status: 'Rascunho' | 'Aprovado' | 'Em Revisão';
 }
 
-const tiposModelo = [
-  'Aula Expositiva',
-  'Aula Prática',
-  'Seminário',
-  'Workshop',
-  'Revisão',
-  'Avaliação',
-  'Projeto',
-  'Dinâmica de Grupo'
+interface EstagioAula {
+  activity_description: string;
+  instructions_icqs: string;
+  duration: string;
+  interaction: string;
+  anticipated_problems: string;
+}
+
+const estagiosAula = [
+  { key: 'warm_up', nome: 'Warm up', cor: '#e3f2fd' },
+  { key: 'lead_in', nome: 'Lead-in', cor: '#e8f5e8' },
+  { key: 'controlled_practice_1', nome: 'Controlled practice 1', cor: '#fff3e0' },
+  { key: 'clarification', nome: 'Clarification', cor: '#f3e5f5' },
+  { key: 'controlled_practice_2', nome: 'Controlled Practice 2', cor: '#e1f5fe' },
+  { key: 'semi_controlled', nome: 'Semi Controlled', cor: '#fce4ec' },
+  { key: 'free_practice', nome: 'Free Practice', cor: '#f1f8e9' },
+  { key: 'further_practice', nome: 'Further practice', cor: '#fff8e1' },
+  { key: 'extra_15_minutes', nome: 'Extra 15 minutes', cor: '#fafafa' }
 ];
 
-export default function PlanoAulas() {
-  const [planos, setPlanos] = useState<PlanoAula[]>([
-    {
-      id: 1,
-      professores_id: 1,
-      turmas_id: 1,
-      data_aula: "2024-01-20",
-      tipo_modelo: "Aula Expositiva",
-      arquivo_url: "plano_aula_01.pdf",
-      detalhes: "Present Perfect - Teoria e Exercícios",
-      data_envio: "2024-01-15T10:30:00",
-      feedback: "Excelente estruturação do conteúdo",
-      professor_nome: "Maria Silva",
-      turma_nome: "Intermediário A"
-    },
-    {
-      id: 2,
-      professores_id: 2,
-      turmas_id: 2,
-      data_aula: "2024-01-22",
-      tipo_modelo: "Aula Prática",
-      arquivo_url: "plano_aula_02.pdf",
-      detalhes: "Conversação - Role Play",
-      data_envio: "2024-01-16T14:20:00",
-      feedback: "",
-      professor_nome: "João Santos",
-      turma_nome: "Avançado B"
-    }
-  ]);
+const interactionTypes = [
+  'T-S (Teacher-Student)',
+  'S-T (Student-Teacher)',
+  'S-S (Student-Student)',
+  'Individual',
+  'Pair work',
+  'Group work',
+  'Whole class'
+];
 
+const createEmptyEstagio = (): EstagioAula => ({
+  activity_description: '',
+  instructions_icqs: '',
+  duration: '',
+  interaction: '',
+  anticipated_problems: ''
+});
+
+export default function PlanoAulas() {
+  const [planos, setPlanos] = useState<PlanoAula[]>([]);
   const [dialogAberto, setDialogAberto] = useState(false);
   const [planoEditando, setPlanoEditando] = useState<PlanoAula | null>(null);
+  const [modoVisualizacao, setModoVisualizacao] = useState(false);
 
   const [novoPlano, setNovoPlano] = useState<Omit<PlanoAula, 'id'>>({
-    professores_id: 0,
-    turmas_id: 0,
-    data_aula: '',
-    tipo_modelo: '',
-    arquivo_url: '',
-    detalhes: '',
-    data_envio: '',
-    feedback: '',
-    professor_nome: '',
-    turma_nome: ''
+    lesson_plan: '',
+    main_aim: '',
+    subsidiary_aim: '',
+    professor: '',
+    data: '',
+    hora: '',
+    warm_up: createEmptyEstagio(),
+    lead_in: createEmptyEstagio(),
+    controlled_practice_1: createEmptyEstagio(),
+    clarification: createEmptyEstagio(),
+    controlled_practice_2: createEmptyEstagio(),
+    semi_controlled: createEmptyEstagio(),
+    free_practice: createEmptyEstagio(),
+    further_practice: createEmptyEstagio(),
+    extra_15_minutes: createEmptyEstagio(),
+    data_criacao: new Date().toISOString().split('T')[0],
+    status: 'Rascunho'
   });
 
-  // Dados mockados para professores e turmas
+  // Dados mockados
   const professores = [
-    { id: 1, nome: "Maria Silva" },
-    { id: 2, nome: "João Santos" },
-    { id: 3, nome: "Ana Costa" },
-    { id: 4, nome: "Pedro Lima" }
+    'Maria Silva',
+    'João Santos', 
+    'Ana Costa',
+    'Pedro Lima',
+    'Carlos Oliveira'
   ];
 
   const turmas = [
-    { id: 1, nome: "Intermediário A" },
-    { id: 2, nome: "Avançado B" },
-    { id: 3, nome: "Básico C" },
-    { id: 4, nome: "Conversação D" }
+    'Inglês Básico - Turma A',
+    'Inglês Básico - Turma B',
+    'Inglês Intermediário - Turma A',
+    'Inglês Intermediário - Turma B',
+    'Inglês Avançado - Turma A',
+    'Espanhol Básico - Turma A',
+    'Conversação - Turma A'
   ];
 
-  const abrirDialog = (plano?: PlanoAula) => {
+  const abrirDialog = (plano?: PlanoAula, visualizar = false) => {
     if (plano) {
       setPlanoEditando(plano);
       setNovoPlano(plano);
     } else {
       setPlanoEditando(null);
       setNovoPlano({
-        professores_id: 0,
-        turmas_id: 0,
-        data_aula: '',
-        tipo_modelo: '',
-        arquivo_url: '',
-        detalhes: '',
-        data_envio: new Date().toISOString().slice(0, 16),
-        feedback: '',
-        professor_nome: '',
-        turma_nome: ''
+        lesson_plan: '',
+        main_aim: '',
+        subsidiary_aim: '',
+        professor: '',
+        data: '',
+        hora: '',
+        warm_up: createEmptyEstagio(),
+        lead_in: createEmptyEstagio(),
+        controlled_practice_1: createEmptyEstagio(),
+        clarification: createEmptyEstagio(),
+        controlled_practice_2: createEmptyEstagio(),
+        semi_controlled: createEmptyEstagio(),
+        free_practice: createEmptyEstagio(),
+        further_practice: createEmptyEstagio(),
+        extra_15_minutes: createEmptyEstagio(),
+        data_criacao: new Date().toISOString().split('T')[0],
+        status: 'Rascunho'
       });
     }
+    setModoVisualizacao(visualizar);
     setDialogAberto(true);
   };
 
   const fecharDialog = () => {
     setDialogAberto(false);
     setPlanoEditando(null);
+    setModoVisualizacao(false);
   };
 
   const salvarPlano = () => {
-    const professorSelecionado = professores.find(p => p.id === novoPlano.professores_id);
-    const turmaSelecionada = turmas.find(t => t.id === novoPlano.turmas_id);
-    
-    const planoCompleto = {
-      ...novoPlano,
-      professor_nome: professorSelecionado?.nome || '',
-      turma_nome: turmaSelecionada?.nome || ''
-    };
-
     if (planoEditando) {
       setPlanos(prev => 
-        prev.map(p => p.id === planoEditando.id ? { ...planoCompleto, id: planoEditando.id } : p)
+        prev.map(p => p.id === planoEditando.id ? { ...novoPlano, id: planoEditando.id } : p)
       );
     } else {
       const novoId = Math.max(...planos.map(p => p.id), 0) + 1;
-      setPlanos(prev => [...prev, { ...planoCompleto, id: novoId }]);
+      setPlanos(prev => [...prev, { ...novoPlano, id: novoId }]);
     }
     fecharDialog();
   };
@@ -179,12 +209,16 @@ export default function PlanoAulas() {
     setPlanos(prev => prev.filter(p => p.id !== id));
   };
 
-  const formatarDataHora = (dataHora: string) => {
-    return new Date(dataHora).toLocaleString('pt-BR');
-  };
-
   const formatarData = (data: string) => {
     return new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Aprovado': return 'success';
+      case 'Em Revisão': return 'warning';
+      default: return 'default';
+    }
   };
 
   return (
@@ -220,7 +254,7 @@ export default function PlanoAulas() {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                   <Typography variant="h4" fontWeight="bold">
-                    {planos.filter(p => new Date(p.data_aula) >= new Date()).length}
+                    {planos.filter(p => new Date(p.data) >= new Date()).length}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
                     Próximas Aulas
@@ -238,13 +272,13 @@ export default function PlanoAulas() {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                   <Typography variant="h4" fontWeight="bold">
-                    {planos.filter(p => p.feedback).length}
+                    {planos.filter(p => p.status === 'Aprovado').length}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Com Feedback
+                    Aprovados
                   </Typography>
                 </Box>
-                <FeedbackIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+                <CheckCircleIcon sx={{ fontSize: 40, opacity: 0.8 }} />
               </Box>
             </CardContent>
           </Card>
@@ -256,7 +290,7 @@ export default function PlanoAulas() {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                   <Typography variant="h4" fontWeight="bold">
-                    {new Set(planos.map(p => p.professores_id)).size}
+                    {new Set(planos.map(p => p.professor)).size}
                   </Typography>
                   <Typography variant="body2" sx={{ opacity: 0.9 }}>
                     Professores
@@ -286,52 +320,42 @@ export default function PlanoAulas() {
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableCell><strong>Lesson Plan</strong></TableCell>
               <TableCell><strong>Professor</strong></TableCell>
-              <TableCell><strong>Turma</strong></TableCell>
-              <TableCell><strong>Data da Aula</strong></TableCell>
-              <TableCell><strong>Tipo/Modelo</strong></TableCell>
-              <TableCell><strong>Detalhes</strong></TableCell>
-              <TableCell><strong>Data Envio</strong></TableCell>
-              <TableCell><strong>Feedback</strong></TableCell>
+              <TableCell><strong>Data</strong></TableCell>
+              <TableCell><strong>Hora</strong></TableCell>
+              <TableCell><strong>Main Aim</strong></TableCell>
+              <TableCell><strong>Status</strong></TableCell>
               <TableCell align="center"><strong>Ações</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {planos.map((plano) => (
               <TableRow key={plano.id} hover>
-                <TableCell>{plano.professor_nome}</TableCell>
-                <TableCell>{plano.turma_nome}</TableCell>
-                <TableCell>{formatarData(plano.data_aula)}</TableCell>
-                <TableCell>
-                  <Chip 
-                    label={plano.tipo_modelo} 
-                    size="small" 
-                    color="primary" 
-                    variant="outlined"
-                  />
-                </TableCell>
+                <TableCell>{plano.lesson_plan}</TableCell>
+                <TableCell>{plano.professor}</TableCell>
+                <TableCell>{formatarData(plano.data)}</TableCell>
+                <TableCell>{plano.hora}</TableCell>
                 <TableCell sx={{ maxWidth: 200 }}>
                   <Typography variant="body2" noWrap>
-                    {plano.detalhes}
+                    {plano.main_aim}
                   </Typography>
                 </TableCell>
-                <TableCell>{formatarDataHora(plano.data_envio)}</TableCell>
-                <TableCell sx={{ maxWidth: 150 }}>
-                  {plano.feedback ? (
-                    <Typography variant="body2" noWrap color="success.main">
-                      {plano.feedback}
-                    </Typography>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      Sem feedback
-                    </Typography>
-                  )}
+                <TableCell>
+                  <Chip 
+                    label={plano.status} 
+                    size="small" 
+                    color={getStatusColor(plano.status) as any}
+                  />
                 </TableCell>
                 <TableCell align="center">
-                  <IconButton size="small" onClick={() => abrirDialog(plano)}>
+                  <IconButton size="small" onClick={() => abrirDialog(plano, true)} title="Visualizar">
+                    <DescriptionIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton size="small" onClick={() => abrirDialog(plano)} title="Editar">
                     <EditIcon fontSize="small" />
                   </IconButton>
-                  <IconButton size="small" onClick={() => excluirPlano(plano.id)}>
+                  <IconButton size="small" onClick={() => excluirPlano(plano.id)} title="Excluir">
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
@@ -356,130 +380,325 @@ export default function PlanoAulas() {
         </Paper>
       )}
 
-      {/* FAB para adicionar */}
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-        onClick={() => abrirDialog()}
-      >
-        <AddIcon />
-      </Fab>
-
       {/* Dialog para adicionar/editar plano */}
-      <Dialog open={dialogAberto} onClose={fecharDialog} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {planoEditando ? 'Editar Plano de Aula' : 'Novo Plano de Aula'}
+      <Dialog open={dialogAberto} onClose={fecharDialog} maxWidth="lg" fullWidth>
+        <DialogTitle sx={{ bgcolor: '#1976d2', color: 'white', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <AssignmentIcon />
+          {modoVisualizacao ? 'Visualizar Plano de Aula' : 
+           planoEditando ? 'Editar Plano de Aula' : 'Novo Plano de Aula'}
         </DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Professor</InputLabel>
-                <Select
-                  value={novoPlano.professores_id}
-                  label="Professor"
-                  onChange={(e) => setNovoPlano(prev => ({ ...prev, professores_id: Number(e.target.value) }))}
-                >
-                  {professores.map((professor) => (
-                    <MenuItem key={professor.id} value={professor.id}>
-                      {professor.nome}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Turma</InputLabel>
-                <Select
-                  value={novoPlano.turmas_id}
-                  label="Turma"
-                  onChange={(e) => setNovoPlano(prev => ({ ...prev, turmas_id: Number(e.target.value) }))}
-                >
-                  {turmas.map((turma) => (
-                    <MenuItem key={turma.id} value={turma.id}>
-                      {turma.nome}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Data da Aula"
-                type="date"
-                InputLabelProps={{ shrink: true }}
-                value={novoPlano.data_aula}
-                onChange={(e) => setNovoPlano(prev => ({ ...prev, data_aula: e.target.value }))}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Tipo/Modelo</InputLabel>
-                <Select
-                  value={novoPlano.tipo_modelo}
-                  label="Tipo/Modelo"
-                  onChange={(e) => setNovoPlano(prev => ({ ...prev, tipo_modelo: e.target.value }))}
-                >
-                  {tiposModelo.map((tipo) => (
-                    <MenuItem key={tipo} value={tipo}>
-                      {tipo}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Detalhes"
-                multiline
-                rows={3}
-                value={novoPlano.detalhes}
-                onChange={(e) => setNovoPlano(prev => ({ ...prev, detalhes: e.target.value }))}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="URL do Arquivo"
-                value={novoPlano.arquivo_url}
-                onChange={(e) => setNovoPlano(prev => ({ ...prev, arquivo_url: e.target.value }))}
-                InputProps={{
-                  startAdornment: <CloudUploadIcon sx={{ mr: 1, color: 'action.active' }} />
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Data de Envio"
-                type="datetime-local"
-                InputLabelProps={{ shrink: true }}
-                value={novoPlano.data_envio}
-                onChange={(e) => setNovoPlano(prev => ({ ...prev, data_envio: e.target.value }))}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Feedback"
-                multiline
-                rows={3}
-                value={novoPlano.feedback}
-                onChange={(e) => setNovoPlano(prev => ({ ...prev, feedback: e.target.value }))}
-                placeholder="Feedback sobre o plano de aula..."
-              />
-            </Grid>
-          </Grid>
+        <DialogContent sx={{ p: 3 }}>
+          {/* Cabeçalho Inicial */}
+          <Paper elevation={2} sx={{ p: 3, mb: 3, bgcolor: '#f8f9fa' }}>
+            <Typography variant="h5" align="center" sx={{ fontWeight: 'bold', mb: 2 }}>
+              📋 LESSON PLAN
+            </Typography>
+            <Grid container spacing={3}>
+                <Grid item xs={12} sm={4}>
+                   <FormControl fullWidth disabled={modoVisualizacao}>
+                     <InputLabel>TURMA</InputLabel>
+                     <Select
+                       value={novoPlano.lesson_plan}
+                       onChange={(e) => setNovoPlano(prev => ({ ...prev, lesson_plan: e.target.value }))}
+                       variant={modoVisualizacao ? 'standard' : 'outlined'}
+                       sx={{ 
+                         '& .MuiInputBase-root': { 
+                           height: '60px !important',
+                           bgcolor: 'white',
+                           fontSize: '14px'
+                         },
+                         '& .MuiSelect-select': {
+                           fontSize: '14px'
+                         }
+                       }}
+                     >
+                       <MenuItem value="Turma A - Básico">Turma A - Básico</MenuItem>
+                       <MenuItem value="Turma B - Intermediário">Turma B - Intermediário</MenuItem>
+                       <MenuItem value="Turma C - Avançado">Turma C - Avançado</MenuItem>
+                       <MenuItem value="Turma D - Conversação">Turma D - Conversação</MenuItem>
+                       <MenuItem value="Turma E - Business">Turma E - Business</MenuItem>
+                       <MenuItem value="Turma F - Preparatório">Turma F - Preparatório</MenuItem>
+                     </Select>
+                   </FormControl>
+                 </Grid>
+                <Grid item xs={12} sm={4}>
+                  <FormControl fullWidth sx={{ 
+                    '& .MuiInputBase-root': { height: '60px', bgcolor: 'white' },
+                    '& .MuiSelect-select': { fontSize: '14px' }
+                  }}>
+                    <InputLabel>Professor:</InputLabel>
+                    <Select
+                      value={novoPlano.professor}
+                      onChange={(e) => setNovoPlano(prev => ({ ...prev, professor: e.target.value }))}
+                      disabled={modoVisualizacao}
+                    >
+                      {professores.map((professor) => (
+                        <MenuItem key={professor} value={professor}>
+                          {professor}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    fullWidth
+                    label="Data:"
+                    type="date"
+                    value={novoPlano.data}
+                    onChange={(e) => setNovoPlano(prev => ({ ...prev, data: e.target.value }))}
+                    disabled={modoVisualizacao}
+                    variant={modoVisualizacao ? 'standard' : 'outlined'}
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ 
+                      '& .MuiInputBase-root': { height: '60px', bgcolor: 'white' },
+                      '& .MuiInputBase-input': { fontSize: '14px' }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="MAIN AIM:"
+                    multiline
+                    rows={2}
+                    value={novoPlano.main_aim}
+                    onChange={(e) => setNovoPlano(prev => ({ ...prev, main_aim: e.target.value }))}
+                    disabled={modoVisualizacao}
+                    variant={modoVisualizacao ? 'standard' : 'outlined'}
+                    sx={{ 
+                      '& .MuiInputBase-root': { bgcolor: 'white' },
+                      '& .MuiInputBase-input': { fontSize: '14px' }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="SUBSIDIARY AIM:"
+                    multiline
+                    rows={2}
+                    value={novoPlano.subsidiary_aim}
+                    onChange={(e) => setNovoPlano(prev => ({ ...prev, subsidiary_aim: e.target.value }))}
+                    disabled={modoVisualizacao}
+                    variant={modoVisualizacao ? 'standard' : 'outlined'}
+                    sx={{ 
+                      '& .MuiInputBase-root': { bgcolor: 'white' },
+                      '& .MuiInputBase-input': { fontSize: '14px' }
+                    }}
+                  />
+                </Grid>
+               </Grid>
+           </Paper>
+
+          {/* Estágios da Aula */}
+          <Typography variant="h6" sx={{ mb: 3, color: '#1976d2', fontWeight: 'bold' }}>
+            🎯 ESTÁGIOS DA AULA
+          </Typography>
+          {estagiosAula.map((estagio, index) => {
+            const estagioData = novoPlano[estagio.key as keyof PlanoAula] as EstagioAula;
+            
+            return (
+              <Accordion key={estagio.key} sx={{ 
+                mb: 2, 
+                border: '2px solid #e0e0e0',
+                borderRadius: '12px !important',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                '&:before': { display: 'none' }
+              }}>
+                <AccordionSummary 
+                   expandIcon={<ExpandMoreIcon />} 
+                   sx={{ 
+                     bgcolor: estagio.cor, 
+                     borderRadius: '10px 10px 0 0',
+                     minHeight: '64px',
+                     '&:hover': { bgcolor: estagio.cor },
+                     '& .MuiAccordionSummary-content': { alignItems: 'center' }
+                   }}
+                 >
+                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                     <Chip 
+                       label={index + 1} 
+                       size="small" 
+                       sx={{ 
+                         bgcolor: 'white', 
+                         color: '#1976d2', 
+                         fontWeight: 'bold',
+                         minWidth: '32px'
+                       }} 
+                     />
+                     <AccessTimeIcon sx={{ color: '#1976d2' }} />
+                     <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+                       {estagio.nome}
+                     </Typography>
+                   </Box>
+                </AccordionSummary>
+                <AccordionDetails sx={{ bgcolor: '#fafafa', p: 3 }}>
+                  <Grid container spacing={2}>
+                     {/* Primeira linha - Campos principais */}
+                     <Grid item xs={12} md={6}>
+                       <TextField
+                         fullWidth
+                         label="📝 ACTIVITY/DESCRIPTION"
+                         multiline
+                         rows={4}
+                         value={estagioData.activity_description}
+                         onChange={(e) => setNovoPlano(prev => ({
+                           ...prev,
+                           [estagio.key]: {
+                             ...estagioData,
+                             activity_description: e.target.value
+                           }
+                         }))}
+                         disabled={modoVisualizacao}
+                         variant={modoVisualizacao ? 'standard' : 'outlined'}
+                         placeholder="Descreva a atividade principal..."
+                         sx={{ 
+                           height: '140px',
+                           '& .MuiInputBase-root': { 
+                             height: '140px',
+                             bgcolor: 'white'
+                           }
+                         }}
+                       />
+                     </Grid>
+                     <Grid item xs={12} md={6}>
+                       <TextField
+                         fullWidth
+                         label="💬 INSTRUCTIONS / ICQS"
+                         multiline
+                         rows={4}
+                         value={estagioData.instructions_icqs}
+                         onChange={(e) => setNovoPlano(prev => ({
+                           ...prev,
+                           [estagio.key]: {
+                             ...estagioData,
+                             instructions_icqs: e.target.value
+                           }
+                         }))}
+                         disabled={modoVisualizacao}
+                         variant={modoVisualizacao ? 'standard' : 'outlined'}
+                         placeholder="Instruções e perguntas de verificação..."
+                         sx={{ 
+                           height: '140px',
+                           '& .MuiInputBase-root': { 
+                             height: '140px',
+                             bgcolor: 'white'
+                           }
+                         }}
+                       />
+                     </Grid>
+                     
+                     {/* Segunda linha - Campos secundários */}
+                     <Grid item xs={12} md={4}>
+                       <TextField
+                         fullWidth
+                         label="⏱️ DURATION"
+                         value={estagioData.duration}
+                         onChange={(e) => setNovoPlano(prev => ({
+                           ...prev,
+                           [estagio.key]: {
+                             ...estagioData,
+                             duration: e.target.value
+                           }
+                         }))}
+                         disabled={modoVisualizacao}
+                         variant={modoVisualizacao ? 'standard' : 'outlined'}
+                         placeholder="ex: 10 min"
+                         sx={{ 
+                           height: '80px',
+                           '& .MuiInputBase-root': { 
+                             height: '80px',
+                             bgcolor: 'white'
+                           }
+                         }}
+                       />
+                     </Grid>
+                     <Grid item xs={12} md={4}>
+                       <FormControl fullWidth disabled={modoVisualizacao} sx={{ height: '80px' }}>
+                         <InputLabel>👥 INTERACTION</InputLabel>
+                         <Select
+                           value={estagioData.interaction}
+                           onChange={(e) => setNovoPlano(prev => ({
+                             ...prev,
+                             [estagio.key]: {
+                               ...estagioData,
+                               interaction: e.target.value
+                             }
+                           }))}
+                           sx={{ 
+                             height: '80px',
+                             '& .MuiInputBase-root': { 
+                               height: '80px',
+                               bgcolor: 'white'
+                             }
+                           }}
+                         >
+                           {interactionTypes.map((type) => (
+                             <MenuItem key={type} value={type}>
+                               {type}
+                             </MenuItem>
+                           ))}
+                         </Select>
+                       </FormControl>
+                     </Grid>
+                     <Grid item xs={12} md={4}>
+                       <TextField
+                         fullWidth
+                         label="⚠️ ANTICIPATED PROBLEMS?"
+                         multiline
+                         rows={2}
+                         value={estagioData.anticipated_problems}
+                         onChange={(e) => setNovoPlano(prev => ({
+                           ...prev,
+                           [estagio.key]: {
+                             ...estagioData,
+                             anticipated_problems: e.target.value
+                           }
+                         }))}
+                         disabled={modoVisualizacao}
+                         variant={modoVisualizacao ? 'standard' : 'outlined'}
+                         placeholder="Possíveis dificuldades..."
+                         sx={{ 
+                           height: '80px',
+                           '& .MuiInputBase-root': { 
+                             height: '80px',
+                             bgcolor: 'white'
+                           }
+                         }}
+                       />
+                     </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+            );
+          })}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={fecharDialog}>Cancelar</Button>
-          <Button onClick={salvarPlano} variant="contained">
-            {planoEditando ? 'Salvar' : 'Adicionar'}
-          </Button>
+        <DialogActions sx={{ p: 3, bgcolor: '#f5f5f5' }}>
+          <Stack direction="row" spacing={2}>
+            <Button onClick={fecharDialog}>
+              {modoVisualizacao ? 'Fechar' : 'Cancelar'}
+            </Button>
+            {modoVisualizacao && (
+              <Button 
+                variant="outlined" 
+                startIcon={<PrintIcon />}
+                onClick={() => window.print()}
+              >
+                Imprimir
+              </Button>
+            )}
+            {!modoVisualizacao && (
+              <Button 
+                onClick={salvarPlano} 
+                variant="contained" 
+                startIcon={<SaveIcon />}
+                sx={{ bgcolor: '#1976d2' }}
+              >
+                {planoEditando ? 'Atualizar' : 'Salvar'}
+              </Button>
+            )}
+          </Stack>
         </DialogActions>
       </Dialog>
     </Box>

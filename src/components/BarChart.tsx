@@ -21,9 +21,29 @@ export default function BarChart({ data = [] }: BarChartProps) {
     labels: data.map(item => item.label),
     datasets: [
       {
-        label: "Quantidade",
+        label: "Quantidade de Alunos",
         data: data.map(item => item.value),
-        backgroundColor: "#1976d2"
+        backgroundColor: [
+          '#0d47a1',
+          '#1565c0', 
+          '#1976d2',
+          '#1e88e5'
+        ],
+        borderColor: [
+          '#0d47a1',
+          '#1565c0', 
+          '#1976d2',
+          '#1e88e5'
+        ],
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+        hoverBackgroundColor: [
+          '#0a3d91',
+          '#1359b0', 
+          '#1669c2',
+          '#1b7dd5'
+        ]
       }
     ]
   };
@@ -33,32 +53,82 @@ export default function BarChart({ data = [] }: BarChartProps) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top" as const,
-        display: !isSmallScreen
+        display: false
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        titleFont: {
+          size: 14,
+          weight: 'bold'
+        },
+        bodyFont: {
+          size: 13
+        },
+        cornerRadius: 8,
+        displayColors: true,
+        callbacks: {
+          label: function(context: any) {
+            return `${context.dataset.label}: ${context.parsed.y} alunos`;
+          }
+        }
       }
     },
     scales: {
       y: {
         beginAtZero: true,
+        grid: {
+          color: 'rgba(13, 71, 161, 0.1)',
+          lineWidth: 1
+        },
         ticks: {
           font: {
-            size: isSmallScreen ? 10 : 12
+            size: 12,
+            weight: 'bold'
+          },
+          color: '#0d47a1',
+          callback: function(value: any) {
+            return value + ' alunos';
           }
         }
       },
       x: {
+        grid: {
+          display: false
+        },
         ticks: {
           font: {
-            size: isSmallScreen ? 10 : 12
-          }
+            size: 12,
+            weight: 'bold'
+          },
+          color: '#0d47a1',
+          maxRotation: 0
         }
+      }
+    },
+    elements: {
+      bar: {
+        borderWidth: 2
       }
     }
   };
 
   return (
-    <Box sx={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <Bar data={chartData} options={options} />
+    <Box sx={{ 
+      width: "100%", 
+      height: "100%", 
+      display: "flex", 
+      justifyContent: "center", 
+      alignItems: "center",
+      minHeight: "280px",
+      padding: 1
+    }}>
+      <Box sx={{
+        width: "100%",
+        height: "100%",
+        maxHeight: "320px"
+      }}>
+        <Bar data={chartData} options={options} />
+      </Box>
     </Box>
   );
 }

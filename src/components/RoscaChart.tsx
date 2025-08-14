@@ -16,16 +16,16 @@ interface RoscaChartProps {
 export default function RoscaChart({ data = [] }: RoscaChartProps) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
-  // Cores para o gráfico
+  // Cores para o gráfico - mais vibrantes e profissionais
   const backgroundColors = [
-    '#1976d2', // azul
-    '#2e7d32', // verde
-    '#ed6c02', // laranja
-    '#9c27b0', // roxo
-    '#d32f2f', // vermelho
-    '#0288d1', // azul claro
-    '#388e3c', // verde claro
-    '#f57c00'  // laranja claro
+    '#4a148c', // roxo escuro
+    '#7b1fa2', // roxo médio
+    '#ab47bc', // roxo claro
+    '#ce93d8', // roxo muito claro
+    '#e1bee7', // lilás
+    '#f3e5f5', // rosa muito claro
+    '#8e24aa', // roxo vibrante
+    '#ba68c8'  // roxo suave
   ];
 
   // Configuração do gráfico
@@ -36,7 +36,10 @@ export default function RoscaChart({ data = [] }: RoscaChartProps) {
         label: "Quantidade",
         data: data.map(item => item.value),
         backgroundColor: backgroundColors.slice(0, data.length),
-        borderWidth: 1
+        borderWidth: 2,
+        borderColor: '#ffffff',
+        hoverBorderWidth: 3,
+        hoverBorderColor: '#ffffff'
       }
     ]
   };
@@ -46,16 +49,33 @@ export default function RoscaChart({ data = [] }: RoscaChartProps) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: isSmallScreen ? "bottom" : "right" as const,
+        position: "bottom" as const,
         labels: {
           font: {
-            size: isSmallScreen ? 10 : 12
+            size: 13,
+            weight: 'bold'
           },
-          boxWidth: isSmallScreen ? 10 : 15
+          boxWidth: 18,
+          padding: 15,
+          usePointStyle: true,
+          pointStyle: 'circle'
         }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        titleFont: {
+          size: 14,
+          weight: 'bold'
+        },
+        bodyFont: {
+          size: 13
+        },
+        cornerRadius: 8,
+        displayColors: true
       }
     },
-    cutout: isSmallScreen ? '65%' : '50%'
+    cutout: '45%',
+    radius: '90%'
   };
 
   return (
@@ -65,10 +85,17 @@ export default function RoscaChart({ data = [] }: RoscaChartProps) {
       display: "flex", 
       justifyContent: "center",
       alignItems: "center",
-      maxWidth: isSmallScreen ? "100%" : "90%",
-      margin: "0 auto"
+      minHeight: "280px",
+      position: "relative"
     }}>
-      <Doughnut data={chartData} options={options} />
+      <Box sx={{
+        width: "100%",
+        height: "100%",
+        maxWidth: "350px",
+        maxHeight: "350px"
+      }}>
+        <Doughnut data={chartData} options={options} />
+      </Box>
     </Box>
   );
 }
