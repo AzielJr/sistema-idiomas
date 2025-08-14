@@ -69,6 +69,7 @@ interface PlanoAula {
   free_practice: EstagioAula;
   further_practice: EstagioAula;
   extra_15_minutes: EstagioAula;
+  personalizado_professor: EstagioAula;
   // Metadados
   data_criacao: string;
   status: 'Rascunho' | 'Aprovado' | 'Em Revisão';
@@ -91,7 +92,8 @@ const estagiosAula = [
   { key: 'semi_controlled', nome: 'Semi Controlled', cor: '#fce4ec' },
   { key: 'free_practice', nome: 'Free Practice', cor: '#f1f8e9' },
   { key: 'further_practice', nome: 'Further practice', cor: '#fff8e1' },
-  { key: 'extra_15_minutes', nome: 'Extra 15 minutes', cor: '#fafafa' }
+  { key: 'extra_15_minutes', nome: 'Extra 15 minutes', cor: '#fafafa' },
+  { key: 'personalizado_professor', nome: 'Personalizado - Professor', cor: '#e8eaf6' }
 ];
 
 const interactionTypes = [
@@ -134,6 +136,7 @@ export default function PlanoAulas() {
     free_practice: createEmptyEstagio(),
     further_practice: createEmptyEstagio(),
     extra_15_minutes: createEmptyEstagio(),
+    personalizado_professor: createEmptyEstagio(),
     data_criacao: new Date().toISOString().split('T')[0],
     status: 'Rascunho'
   });
@@ -179,6 +182,7 @@ export default function PlanoAulas() {
         free_practice: createEmptyEstagio(),
         further_practice: createEmptyEstagio(),
         extra_15_minutes: createEmptyEstagio(),
+        personalizado_professor: createEmptyEstagio(),
         data_criacao: new Date().toISOString().split('T')[0],
         status: 'Rascunho'
       });
@@ -218,6 +222,129 @@ export default function PlanoAulas() {
       case 'Aprovado': return 'success';
       case 'Em Revisão': return 'warning';
       default: return 'default';
+    }
+  };
+
+  const gerarPlanoHTML = () => {
+    // Filtrar apenas estágios que têm pelo menos um campo preenchido
+    const estagiosPreenchidos = estagiosAula.filter(estagio => {
+      const estagioData = novoPlano[estagio.key as keyof PlanoAula] as EstagioAula;
+      return estagioData.activity_description || 
+             estagioData.instructions_icqs || 
+             estagioData.duration || 
+             estagioData.interaction || 
+             estagioData.anticipated_problems;
+    });
+
+    const htmlTemplate = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Aula - ${novoPlano.lesson_plan}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
+        .header { background: #1976d2; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .info-item { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 4px; }
+        .info-label { font-weight: bold; font-size: 12px; }
+        .info-value { font-size: 14px; margin-top: 5px; }
+        .stages-container { display: grid; gap: 20px; }
+        .stage { border: 2px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+        .stage-header { background: #f5f5f5; padding: 15px; font-weight: bold; font-size: 16px; }
+        .stage-content { padding: 20px; }
+        .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .field-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .field { margin-bottom: 15px; }
+        .field-label { font-weight: bold; color: #1976d2; font-size: 12px; margin-bottom: 5px; }
+        .field-value { background: #f9f9f9; padding: 10px; border-radius: 4px; min-height: 20px; border: 1px solid #ddd; }
+        @media print { body { margin: 0; } .header { background: #333 !important; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 PLANO DE AULA</h1>
+        <div class="header-info">
+            <div class="info-item">
+                <div class="info-label">TURMA:</div>
+                <div class="info-value">${novoPlano.lesson_plan}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">PROFESSOR:</div>
+                <div class="info-value">${novoPlano.professor}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">DATA:</div>
+                <div class="info-value">${new Date(novoPlano.data + 'T00:00:00').toLocaleDateString('pt-BR')}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">STATUS:</div>
+                <div class="info-value">${novoPlano.status}</div>
+            </div>
+        </div>
+        <div class="field-grid" style="margin-top: 20px;">
+            <div>
+                <div class="info-label">MAIN AIM:</div>
+                <div class="info-value">${novoPlano.main_aim}</div>
+            </div>
+            <div>
+                <div class="info-label">SUBSIDIARY AIM:</div>
+                <div class="info-value">${novoPlano.subsidiary_aim}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stages-container">
+        ${estagiosPreenchidos.map((estagio, index) => {
+          const estagioData = novoPlano[estagio.key as keyof PlanoAula] as EstagioAula;
+          return `
+        <div class="stage">
+            <div class="stage-header">
+                ${index + 1}. ${estagio.nome}
+            </div>
+            <div class="stage-content">
+                <div class="field-grid">
+                    <div class="field">
+                        <div class="field-label">📝 ACTIVITY/DESCRIPTION</div>
+                        <div class="field-value">${estagioData.activity_description}</div>
+                    </div>
+                    <div class="field">
+                        <div class="field-label">💬 INSTRUCTIONS / ICQS</div>
+                        <div class="field-value">${estagioData.instructions_icqs}</div>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <div class="field-label">⏱️ DURATION</div>
+                        <div class="field-value">${estagioData.duration}</div>
+                    </div>
+                    <div class="field">
+                        <div class="field-label">👥 INTERACTION</div>
+                        <div class="field-value">${estagioData.interaction}</div>
+                    </div>
+                    <div class="field">
+                        <div class="field-label">⚠️ ANTICIPATED PROBLEMS</div>
+                        <div class="field-value">${estagioData.anticipated_problems}</div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        }).join('')}
+    </div>
+
+    <div style="margin-top: 30px; text-align: center; color: #666; font-size: 12px;">
+        Gerado em: ${new Date().toLocaleString('pt-BR')}
+    </div>
+</body>
+</html>`;
+
+    // Abrir em nova janela
+    const novaJanela = window.open('', '_blank');
+    if (novaJanela) {
+      novaJanela.document.write(htmlTemplate);
+      novaJanela.document.close();
     }
   };
 
@@ -692,6 +819,21 @@ export default function PlanoAulas() {
                 Imprimir
               </Button>
             )}
+            <Button 
+              variant="outlined" 
+              startIcon={<DescriptionIcon />}
+              onClick={gerarPlanoHTML}
+              sx={{ 
+                color: '#1976d2', 
+                borderColor: '#1976d2',
+                '&:hover': {
+                  bgcolor: '#e3f2fd',
+                  borderColor: '#1976d2'
+                }
+              }}
+            >
+              Gerar Plano de Aula
+            </Button>
             {!modoVisualizacao && (
               <Button 
                 onClick={salvarPlano} 
