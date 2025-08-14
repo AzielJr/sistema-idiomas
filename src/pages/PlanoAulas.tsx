@@ -591,28 +591,32 @@ export default function PlanoAulas() {
                      
                      {/* Segunda linha - Campos secundários */}
                      <Grid item xs={12} md={4}>
-                       <TextField
-                         fullWidth
-                         label="⏱️ DURATION"
-                         value={estagioData.duration}
-                         onChange={(e) => setNovoPlano(prev => ({
-                           ...prev,
-                           [estagio.key]: {
-                             ...estagioData,
-                             duration: e.target.value
-                           }
-                         }))}
-                         disabled={modoVisualizacao}
-                         variant={modoVisualizacao ? 'standard' : 'outlined'}
-                         placeholder="ex: 10 min"
-                         sx={{ 
-                           height: '80px',
-                           '& .MuiInputBase-root': { 
+                       <FormControl fullWidth disabled={modoVisualizacao} sx={{ height: '80px' }}>
+                         <InputLabel>⏱️ DURATION</InputLabel>
+                         <Select
+                           value={estagioData.duration}
+                           onChange={(e) => setNovoPlano(prev => ({
+                             ...prev,
+                             [estagio.key]: {
+                               ...estagioData,
+                               duration: e.target.value
+                             }
+                           }))}
+                           sx={{ 
                              height: '80px',
-                             bgcolor: 'white'
-                           }
-                         }}
-                       />
+                             '& .MuiInputBase-root': { 
+                               height: '80px',
+                               bgcolor: 'white'
+                             }
+                           }}
+                         >
+                           {Array.from({ length: 30 }, (_, i) => i + 1).map((minute) => (
+                             <MenuItem key={minute} value={`${minute} Min.`}>
+                               {minute} Min.
+                             </MenuItem>
+                           ))}
+                         </Select>
+                       </FormControl>
                      </Grid>
                      <Grid item xs={12} md={4}>
                        <FormControl fullWidth disabled={modoVisualizacao} sx={{ height: '80px' }}>
