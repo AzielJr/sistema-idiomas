@@ -197,7 +197,42 @@ export default function PlanoAulas() {
     setModoVisualizacao(false);
   };
 
+  const validarFormulario = () => {
+    // Verificar se todos os campos do header estão preenchidos
+    const headerCompleto = novoPlano.lesson_plan && 
+                          novoPlano.professor && 
+                          novoPlano.data && 
+                          novoPlano.main_aim && 
+                          novoPlano.subsidiary_aim;
+
+    if (!headerCompleto) {
+      alert('Por favor, preencha todas as informações do cabeçalho (TURMA, Professor, Data, MAIN AIM e SUBSIDIARY AIM).');
+      return false;
+    }
+
+    // Verificar se pelo menos um grupo tem informações digitadas
+    const temGrupoPreenchido = estagiosAula.some(estagio => {
+      const estagioData = novoPlano[estagio.key as keyof PlanoAula] as EstagioAula;
+      return estagioData.activity_description || 
+             estagioData.instructions_icqs || 
+             estagioData.duration || 
+             estagioData.interaction || 
+             estagioData.anticipated_problems;
+    });
+
+    if (!temGrupoPreenchido) {
+      alert('Por favor, preencha pelo menos um campo em qualquer um dos grupos/estágios da aula.');
+      return false;
+    }
+
+    return true;
+  };
+
   const salvarPlano = () => {
+    if (!validarFormulario()) {
+      return;
+    }
+
     if (planoEditando) {
       setPlanos(prev => 
         prev.map(p => p.id === planoEditando.id ? { ...novoPlano, id: planoEditando.id } : p)
