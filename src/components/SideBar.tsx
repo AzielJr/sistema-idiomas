@@ -172,7 +172,7 @@ export default function SideBar({mobileOpen=false, onClose, variant="permanent"}
               secao: "Mov",
               label: "Movimentações",
               items: [
-                { text: "Plano de Aulas", path: "/movimentacoes/plano-aulas" },
+                { text: "Planos de Aula", path: "/movimentacoes/plano-aulas" },
                 { text: "Presença / Faltas", path: "/movimentacoes/presenca-faltas" }
               ]
             },
