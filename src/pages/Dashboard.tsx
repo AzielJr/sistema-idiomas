@@ -392,8 +392,8 @@ export default function Dashboard() {
 
         {/* BLOCO 3: Dashboard Perfeitamente Alinhado */}
         <Grid container spacing={3}>
-          {/* Gráfico de Barras - 40% da largura */}
-          <Grid item xs={12} md={5}>
+          {/* Gráfico de Barras - 50% da largura */}
+          <Grid item xs={12} md={6}>
             <Card elevation={0} sx={{ 
               height: '420px',
               background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
@@ -418,8 +418,8 @@ export default function Dashboard() {
             </Card>
           </Grid>
 
-          {/* Gráfico de Rosca - 35% da largura */}
-          <Grid item xs={12} md={4}>
+          {/* Gráfico de Rosca - 50% da largura */}
+          <Grid item xs={12} md={6}>
             <Card elevation={0} sx={{ 
               height: '420px',
               background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
@@ -439,47 +439,6 @@ export default function Dashboard() {
                 </Typography>
                 <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
                   <RoscaChart data={dadosRosca} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Comentários - 25% da largura */}
-          <Grid item xs={12} md={3}>
-            <Card elevation={0} sx={{ 
-              height: '420px',
-              background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
-              border: '1px solid #ffcc02',
-              borderRadius: 3,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
-            }}>
-              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 4 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                  <Typography variant="h6" sx={{ 
-                    fontWeight: 'bold', 
-                    color: '#e65100',
-                    fontSize: '1.2rem'
-                  }}>
-                    💬 Comentários
-                  </Typography>
-                  <Chip label="3 novos" size="small" sx={{ bgcolor: '#ff9800', color: 'white' }} />
-                </Box>
-                <Box sx={{ 
-                  flexGrow: 1, 
-                  overflow: 'auto',
-                  '&::-webkit-scrollbar': {
-                    width: '6px',
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    background: '#f1f1f1',
-                    borderRadius: '10px',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background: '#ff9800',
-                    borderRadius: '10px',
-                  },
-                }}>
-                  <ListaComentarios />
                 </Box>
               </CardContent>
             </Card>
