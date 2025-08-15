@@ -85,14 +85,15 @@ export default function RoscaChart({ data = [] }: RoscaChartProps) {
       display: "flex", 
       justifyContent: "center",
       alignItems: "center",
-      minHeight: "280px",
-      position: "relative"
+      minHeight: "350px",
+      position: "relative",
+      padding: 2
     }}>
       <Box sx={{
         width: "100%",
         height: "100%",
-        maxWidth: "350px",
-        maxHeight: "350px"
+        minHeight: "350px",
+        minWidth: "350px"
       }}>
         <Doughnut data={chartData} options={options} />
       </Box>

@@ -119,13 +119,13 @@ export default function BarChart({ data = [] }: BarChartProps) {
       display: "flex", 
       justifyContent: "center", 
       alignItems: "center",
-      minHeight: "280px",
-      padding: 1
+      minHeight: "350px",
+      padding: 2
     }}>
       <Box sx={{
         width: "100%",
         height: "100%",
-        maxHeight: "320px"
+        minHeight: "350px"
       }}>
         <Bar data={chartData} options={options} />
       </Box>

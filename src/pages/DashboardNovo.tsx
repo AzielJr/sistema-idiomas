@@ -43,16 +43,17 @@ const DashboardNovo = () => {
 
   const dadosNiveis = [
     { name: 'Básico', value: 320, color: '#1976d2' },
-    { name: 'Intermediário', value: 450, color: '#2196f3' },
-    { name: 'Avançado', value: 280, color: '#42a5f5' },
-    { name: 'Conversação', value: 197, color: '#64b5f6' }
+    { name: 'Intermediário', value: 450, color: '#388e3c' },
+    { name: 'Avançado', value: 280, color: '#f57c00' },
+    { name: 'Conversação', value: 197, color: '#d32f2f' }
   ];
 
   const dadosFaixaEtaria = [
     { name: '6-12 anos', value: 285, color: '#9c27b0' },
     { name: '13-17 anos', value: 420, color: '#ba68c8' },
     { name: '18-25 anos', value: 380, color: '#ce93d8' },
-    { name: '26-35 anos', value: 162, color: '#e1bee7' }
+    { name: '26-35 anos', value: 162, color: '#e1bee7' },
+    { name: '35-50 anos', value: 195, color: '#f3e5f5' }
   ];
 
   const dadosReceita = [
@@ -199,16 +200,16 @@ const DashboardNovo = () => {
         </Grid>
       </Grid>
 
-      {/* Gráficos Principais */}
+      {/* Layout Profissional - Primeira Linha */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Gráfico de Receita */}
-        <Grid item xs={12} lg={8}>
+        {/* Evolução da Receita */}
+        <Grid item xs={12} md={6}>
           <ChartCard title="📈 Evolução da Receita (6 meses)">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={dadosReceita}>
+            <ResponsiveContainer width="100%" height={350}>
+              <LineChart data={dadosReceita} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="mes" stroke="#666" />
-                <YAxis stroke="#666" tickFormatter={(value) => `R$ ${(value/1000).toFixed(0)}k`} />
+                <XAxis dataKey="mes" stroke="#666" fontSize={12} />
+                <YAxis stroke="#666" fontSize={12} tickFormatter={(value) => `R$ ${(value/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(value: any) => [`R$ ${value.toLocaleString()}`, 'Receita']} />
                 <Line 
                   type="monotone" 
@@ -223,17 +224,17 @@ const DashboardNovo = () => {
           </ChartCard>
         </Grid>
 
-        {/* Distribuição por Nível */}
-        <Grid item xs={12} lg={4}>
+        {/* Alunos por Nível */}
+        <Grid item xs={12} md={6}>
           <ChartCard title="📚 Alunos por Nível">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={350}>
               <PieChart>
                 <Pie
                   data={dadosNiveis}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
                   outerRadius={120}
+                  innerRadius={60}
                   paddingAngle={5}
                   dataKey="value"
                 >
@@ -244,15 +245,12 @@ const DashboardNovo = () => {
                 <Tooltip formatter={(value: any) => [`${value} alunos`, 'Quantidade']} />
               </PieChart>
             </ResponsiveContainer>
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
               {dadosNiveis.map((item, index) => (
-                <Box key={index} display="flex" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Box sx={{ width: 12, height: 12, bgcolor: item.color, borderRadius: '50%' }} />
-                    <Typography variant="body2">{item.name}</Typography>
-                  </Box>
-                  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                    {item.value}
+                <Box key={index} display="flex" alignItems="center" gap={1}>
+                  <Box sx={{ width: 12, height: 12, bgcolor: item.color, borderRadius: '50%' }} />
+                  <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                    {item.name}: {item.value}
                   </Typography>
                 </Box>
               ))}
@@ -261,16 +259,16 @@ const DashboardNovo = () => {
         </Grid>
       </Grid>
 
-      {/* Segunda linha de gráficos */}
+      {/* Layout Profissional - Segunda Linha - ALINHAMENTO PERFEITO */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {/* Faixa Etária */}
-        <Grid item xs={12} lg={8}>
-          <ChartCard title="👥 Distribuição por Faixa Etária">
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={dadosFaixaEtaria} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        {/* Distribuição por Faixa Etária - MESMO TAMANHO DO GRÁFICO DE RECEITA */}
+        <Grid item xs={12} md={6}>
+          <ChartCard title="👥 Distribuição por Faixa Etária" sx={{ pr: '20px' }}>
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={dadosFaixaEtaria} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="name" stroke="#666" />
-                <YAxis stroke="#666" />
+                <XAxis dataKey="name" stroke="#666" fontSize={12} />
+                <YAxis stroke="#666" fontSize={12} />
                 <Tooltip formatter={(value: any) => [`${value} alunos`, 'Quantidade']} />
                 <Bar 
                   dataKey="value" 
@@ -284,39 +282,37 @@ const DashboardNovo = () => {
           </ChartCard>
         </Grid>
 
-        {/* Métricas Rápidas */}
-        <Grid item xs={12} lg={4}>
+        {/* Métricas Rápidas - MESMO TAMANHO DO GRÁFICO DE NÍVEIS */}
+        <Grid item xs={12} md={6}>
           <ChartCard title="⚡ Métricas Rápidas">
-            <Grid container spacing={2} sx={{ width: '100%' }}>
-              <Grid item xs={6}>
-                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#e3f2fd' }}>
-                  <BookOnline sx={{ fontSize: 40, color: '#1976d2', mb: 1 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>156</Typography>
-                  <Typography variant="body2" color="text.secondary">Aulas Hoje</Typography>
-                </Paper>
+            <Box sx={{ height: 350, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: '#e3f2fd', mb: 2 }}>
+                <BookOnline sx={{ fontSize: 48, color: '#1976d2', mb: 1 }} />
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2' }}>156</Typography>
+                <Typography variant="body1" color="text.secondary">Aulas Hoje</Typography>
+              </Paper>
+              <Paper sx={{ p: 3, textAlign: 'center', bgcolor: '#e8f5e8', mb: 2 }}>
+                <Schedule sx={{ fontSize: 48, color: '#2e7d32', mb: 1 }} />
+                <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>89%</Typography>
+                <Typography variant="body1" color="text.secondary">Presença</Typography>
+              </Paper>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#fff3e0' }}>
+                    <Payment sx={{ fontSize: 32, color: '#ed6c02', mb: 1 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#ed6c02' }}>92%</Typography>
+                    <Typography variant="body2" color="text.secondary">Pagamentos</Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={6}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#fce4ec' }}>
+                    <Warning sx={{ fontSize: 32, color: '#c2185b', mb: 1 }} />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#c2185b' }}>7</Typography>
+                    <Typography variant="body2" color="text.secondary">Pendências</Typography>
+                  </Paper>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#e8f5e8' }}>
-                  <Schedule sx={{ fontSize: 40, color: '#2e7d32', mb: 1 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2e7d32' }}>89%</Typography>
-                  <Typography variant="body2" color="text.secondary">Presença</Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={6}>
-                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#fff3e0' }}>
-                  <Payment sx={{ fontSize: 40, color: '#ed6c02', mb: 1 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#ed6c02' }}>92%</Typography>
-                  <Typography variant="body2" color="text.secondary">Pagamentos</Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={6}>
-                <Paper sx={{ p: 2, textAlign: 'center', bgcolor: '#fce4ec' }}>
-                  <Warning sx={{ fontSize: 40, color: '#c2185b', mb: 1 }} />
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#c2185b' }}>7</Typography>
-                  <Typography variant="body2" color="text.secondary">Pendências</Typography>
-                </Paper>
-              </Grid>
-            </Grid>
+            </Box>
           </ChartCard>
         </Grid>
       </Grid>
