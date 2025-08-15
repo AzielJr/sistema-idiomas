@@ -390,54 +390,76 @@ export default function Dashboard() {
           </Grid>
         </Grid>
 
-        {/* BLOCO 3: Dashboard Perfeitamente Alinhado */}
-        <Grid container spacing={3}>
-          {/* Gráfico de Barras - 50% da largura */}
+        {/* BLOCO 3: Gráficos Principais - Layout Otimizado */}
+        <Grid container spacing={4}>
+          {/* Gráfico de Barras - Alunos por Nível */}
           <Grid item xs={12} md={6}>
             <Card elevation={0} sx={{ 
-              height: '420px',
+              height: '500px',
               background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
               border: '1px solid #e1f5fe',
-              borderRadius: 3,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
+              borderRadius: 4,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 12px 40px rgba(0,0,0,0.15)'
+              }
             }}>
-              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 3 }}>
-                <Typography variant="h6" sx={{ 
+              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 4 }}>
+                <Typography variant="h5" sx={{ 
                   fontWeight: 'bold', 
                   color: '#0d47a1',
                   textAlign: 'center',
-                  mb: 2,
-                  fontSize: '1.1rem'
+                  mb: 3,
+                  fontSize: '1.3rem'
                 }}>
                   📊 Distribuição de Alunos por Nível
                 </Typography>
-                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ 
+                  flexGrow: 1, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  minHeight: '380px'
+                }}>
                   <BarChart data={dadosBarras} />
                 </Box>
               </CardContent>
             </Card>
           </Grid>
 
-          {/* Gráfico de Rosca - 50% da largura */}
+          {/* Gráfico de Rosca - Faixa Etária */}
           <Grid item xs={12} md={6}>
             <Card elevation={0} sx={{ 
-              height: '420px',
+              height: '500px',
               background: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
               border: '1px solid #f8bbd9',
-              borderRadius: 3,
-              boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
+              borderRadius: 4,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: '0 12px 40px rgba(0,0,0,0.15)'
+              }
             }}>
-              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 3 }}>
-                <Typography variant="h6" sx={{ 
+              <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 4 }}>
+                <Typography variant="h5" sx={{ 
                   fontWeight: 'bold', 
                   color: '#4a148c',
                   textAlign: 'center',
-                  mb: 2,
-                  fontSize: '1.1rem'
+                  mb: 3,
+                  fontSize: '1.3rem'
                 }}>
-                  🎂 Faixa Etária
+                  🎂 Distribuição por Faixa Etária
                 </Typography>
-                <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
+                <Box sx={{ 
+                  flexGrow: 1, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  minHeight: '380px'
+                }}>
                   <RoscaChart data={dadosRosca} />
                 </Box>
               </CardContent>
