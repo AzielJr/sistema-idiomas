@@ -238,8 +238,8 @@ export default function MinhaAgenda() {
   return (
     <Box sx={{ p: 3 }}>
       <PageHeader 
-        titulo="Minha Agenda" 
-        subtitulo="Gerencie seus compromissos e atividades"
+        titulo={t('minhaAgenda.titulo')} 
+        subtitulo={t('minhaAgenda.subtitulo')}
       />
 
       {/* Cards de Resumo */}
@@ -584,7 +584,7 @@ export default function MinhaAgenda() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={fecharCalendario}>Cancelar</Button>
+          <Button onClick={fecharCalendario}>{t('common.cancelar')}</Button>
         </DialogActions>
       </Dialog>
 
@@ -684,10 +684,10 @@ export default function MinhaAgenda() {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={fecharDialog}>Cancelar</Button>
+          <Button onClick={fecharDialog}>{t('common.cancelar')}</Button>
           <Button onClick={salvarCompromisso} variant="contained">
-            {compromissoEditando ? 'Salvar' : 'Adicionar'}
-          </Button>
+              {compromissoEditando ? t('common.salvar') : t('common.adicionar')}
+            </Button>
         </DialogActions>
       </Dialog>
     </Box>

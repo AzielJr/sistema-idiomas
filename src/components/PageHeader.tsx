@@ -6,9 +6,10 @@ import HomeIcon from '@mui/icons-material/Home';
 interface PageHeaderProps {
   title?: string;
   subtitle?: string;
+  rightContent?: React.ReactNode;
 }
 
-export default function PageHeader({ title, subtitle }: PageHeaderProps) {
+export default function PageHeader({ title, subtitle, rightContent }: PageHeaderProps) {
   const location = useLocation();
 
   // Função para gerar breadcrumbs baseado na rota atual
@@ -36,8 +37,9 @@ export default function PageHeader({ title, subtitle }: PageHeaderProps) {
       'administracao': 'Administração',
       'secretaria': 'Secretaria',
       'projetos': 'Projetos',
-      'mov': 'Movimentações',
-      'cadastro': 'Cadastro'
+      'mov': 'Acadêmico',
+      'cadastro': 'Cadastro',
+      'grupos-acesso': 'Níveis de Acesso'
     };
     
     pathSegments.forEach((segment, index) => {
@@ -58,59 +60,69 @@ export default function PageHeader({ title, subtitle }: PageHeaderProps) {
     <Paper 
       elevation={0} 
       sx={{ 
-        p: 3, 
-        mb: 3, 
-        borderRadius: 2,
+        p: 0.5, 
+        mb: 0.5, 
+        mt: 0,
+        borderRadius: 1,
         backgroundColor: 'white',
-        borderLeft: '4px solid',
+        borderLeft: '2px solid',
         borderColor: 'primary.main',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        boxShadow: 'none'
       }}
     >
-      <Box display="flex" flexDirection="column" gap={1}>
-        <Typography variant="h4" fontWeight="bold" color="primary.main">
-          {pageTitle}
-        </Typography>
-        
-        {subtitle && (
-          <Typography variant="subtitle1" color="text.secondary">
-            {subtitle}
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Box display="flex" flexDirection="column" gap={0.1} flex={1}>
+          <Typography variant="subtitle1" fontWeight="500" color="primary.main" sx={{ fontSize: '1rem' }}>
+            {pageTitle}
           </Typography>
-        )}
-        
-        <Breadcrumbs 
-          separator={<NavigateNextIcon fontSize="small" />} 
-          aria-label="breadcrumb"
-          sx={{ mt: 1 }}
-        >
-          {breadcrumbs.map((crumb, index) => {
-            const isLast = index === breadcrumbs.length - 1;
-            return isLast ? (
-              <Box key={index} display="flex" alignItems="center" gap={0.5}>
-                {crumb.icon}
-                <Typography color="text.primary" fontWeight="medium">
+          
+          {subtitle && (
+            <Typography variant="caption" color="text.secondary">
+              {subtitle}
+            </Typography>
+          )}
+          
+          <Breadcrumbs 
+            separator={<NavigateNextIcon fontSize="small" />} 
+            aria-label="breadcrumb"
+            sx={{ mt: 0.1, fontSize: '0.7rem' }}
+          >
+            {breadcrumbs.map((crumb, index) => {
+              const isLast = index === breadcrumbs.length - 1;
+              return isLast ? (
+                <Box key={index} display="flex" alignItems="center" gap={0.5}>
+                  {crumb.icon}
+                  <Typography color="text.primary" fontWeight="medium" fontSize="0.7rem">
+                    {crumb.label}
+                  </Typography>
+                </Box>
+              ) : (
+                <Link 
+                  key={index} 
+                  color="inherit" 
+                  href={crumb.path}
+                  underline="hover"
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 0.5,
+                    fontSize: '0.7rem',
+                    '&:hover': { color: 'primary.main' }
+                  }}
+                >
+                  {crumb.icon}
                   {crumb.label}
-                </Typography>
-              </Box>
-            ) : (
-              <Link 
-                key={index} 
-                color="inherit" 
-                href={crumb.path}
-                underline="hover"
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 0.5,
-                  '&:hover': { color: 'primary.main' }
-                }}
-              >
-                {crumb.icon}
-                {crumb.label}
-              </Link>
-            );
-          })}
-        </Breadcrumbs>
+                </Link>
+              );
+            })}
+          </Breadcrumbs>
+        </Box>
+        
+        {rightContent && (
+          <Box sx={{ ml: 2, display: 'flex', alignItems: 'center' }}>
+            {rightContent}
+          </Box>
+        )}
       </Box>
     </Paper>
   );

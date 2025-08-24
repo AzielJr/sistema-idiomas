@@ -12,286 +12,549 @@ import {
   TextField, 
   Typography, 
   Paper,
-  Chip 
+  Chip,
+  CircularProgress,
+  Alert,
+  Tooltip
 } from "@mui/material";
 import { 
   Edit as EditIcon, 
   Delete as DeleteIcon, 
   Add as AddIcon, 
   Search as SearchIcon,
-  Group as GroupIcon
+  Group as GroupIcon,
+  Print as PrintIcon
 } from "@mui/icons-material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../contexts/AuthContextSimple";
 
 interface Turma {
   id: number;
-  nome_turma: string;
+  nomeTurma: string;
   nivel: string;
-  ano: number;
-  dias_aula: string;
-  horario_inicio: string;
-  horario_fim: string;
-  professores_id: number;
-  professor_nome: string;
+  ano: string;
+  horaInicio: string;
+  horaFim: string;
+  aulaSeg: boolean;
+  aulaTer: boolean;
+  aulaQua: boolean;
+  aulaQui: boolean;
+  aulaSex: boolean;
+  aulaSab: boolean;
+  idProfessor: number;
+  professorNome: string;
+  idCoordenador: number;
+  coordenadorNome: string;
+  idMaterialDidatico: number;
+  materialNome: string;
   sala: string;
-  capacidade_max: number;
-  material_didatico_id: number;
-  material_nome: string;
-  num_alunos: number;
-  coordenador_id: number;
-  coordenador_nome: string;
-  teste: string;
-  diadeaula_segunda: number;
-  diadeaula_terca: number;
-  diadeaula_quarta: number;
-  diadeaula_quinta: number;
-  diadeaula_sexta: number;
-  diadeaula_sabado: number;
-  status: number;
+  capacidadeMaxima: number;
+  numeroAlunos: number;
+  observacoes: string;
+  ativo: boolean;
+  dataCriacao: string;
+  dataAtualizacao: string;
 }
 
 export default function Turmas() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { user, fetchWithAuthSafe } = useAuth();
 
   const [pesquisa, setPesquisa] = useState("");
+  const [turmas, setTurmas] = useState<Turma[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [logomarcaUnidade, setLogomarcaUnidade] = useState<string>("");
+  const [fantasiaUnidade, setFantasiaUnidade] = useState<string>("");
 
-  const [turmas, setTurmas] = useState<Turma[]>([
-    { 
-      id: 1, 
-      nome_turma: "Inglês Básico A1", 
-      nivel: "Básico", 
-      ano: 2024,
-      dias_aula: "Segunda, Quarta",
-      horario_inicio: "08:00",
-      horario_fim: "09:30",
-      professores_id: 1,
-      professor_nome: "Ana Silva",
-      sala: "Sala 101",
-      capacidade_max: 15,
-      material_didatico_id: 1,
-      material_nome: "English Grammar in Use",
-      num_alunos: 12,
-      coordenador_id: 2,
-      coordenador_nome: "Carlos Santos",
-      teste: "Teste A1",
-      diadeaula_segunda: 1,
-      diadeaula_terca: 0,
-      diadeaula_quarta: 1,
-      diadeaula_quinta: 0,
-      diadeaula_sexta: 0,
-      diadeaula_sabado: 0,
-      status: 1
-    },
-    { 
-      id: 2, 
-      nome_turma: "Inglês Intermediário B1", 
-      nivel: "Intermediário", 
-      ano: 2024,
-      dias_aula: "Terça, Quinta",
-      horario_inicio: "14:00",
-      horario_fim: "15:30",
-      professores_id: 2,
-      professor_nome: "Carlos Santos",
-      sala: "Sala 102",
-      capacidade_max: 20,
-      material_didatico_id: 2,
-      material_nome: "New Headway Elementary",
-      num_alunos: 18,
-      coordenador_id: 2,
-      coordenador_nome: "Carlos Santos",
-      teste: "Teste B1",
-      diadeaula_segunda: 0,
-      diadeaula_terca: 1,
-      diadeaula_quarta: 0,
-      diadeaula_quinta: 1,
-      diadeaula_sexta: 0,
-      diadeaula_sabado: 0,
-      status: 1
-    },
-    { 
-      id: 3, 
-      nome_turma: "Inglês Avançado C1", 
-      nivel: "Avançado", 
-      ano: 2024,
-      dias_aula: "Segunda, Sexta",
-      horario_inicio: "19:00",
-      horario_fim: "20:30",
-      professores_id: 3,
-      professor_nome: "Maria Oliveira",
-      sala: "Sala 103",
-      capacidade_max: 12,
-      material_didatico_id: 3,
-      material_nome: "Business English Course",
-      num_alunos: 8,
-      coordenador_id: 2,
-      coordenador_nome: "Carlos Santos",
-      teste: "Teste C1",
-      diadeaula_segunda: 1,
-      diadeaula_terca: 0,
-      diadeaula_quarta: 0,
-      diadeaula_quinta: 0,
-      diadeaula_sexta: 1,
-      diadeaula_sabado: 0,
-      status: 0
+  useEffect(() => {
+    if (user?.idUnidade) {
+      carregarTurmas();
+      carregarLogomarcaUnidade();
     }
-  ]);
+  }, [user?.idUnidade]);
 
-  const turmasFiltradas = turmas.filter((turma) =>
-    turma.nome_turma.toLowerCase().includes(pesquisa.toLowerCase()) ||
-    turma.nivel.toLowerCase().includes(pesquisa.toLowerCase()) ||
-    turma.professor_nome.toLowerCase().includes(pesquisa.toLowerCase())
-  );
-
-  const handleExcluir = (id: number) => {
-    if (window.confirm("Confirma a exclusão desta turma?")) {
-      setTurmas(turmas.filter((turma) => turma.id !== id));
+  const carregarLogomarcaUnidade = async () => {
+    if (!user?.idUnidade) return;
+    
+    try {
+      const response = await fetchWithAuthSafe(`http://localhost:8080/api/unidades/${user.idUnidade}`);
+      if (response.ok) {
+        const unidade = await response.json();
+        setLogomarcaUnidade(unidade.logomarca || "");
+        setFantasiaUnidade(unidade.fantasia || `Unidade ${user.idUnidade}`);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar logomarca da unidade:', error);
     }
   };
 
-  const handleEditar = (id: number) => {
-    navigate(`/cadastros/turmas/cadastro/${id}`);
+  const carregarTurmas = async () => {
+    if (!user?.idUnidade) return;
+    
+    try {
+      setLoading(true);
+      const response = await fetchWithAuthSafe(`http://localhost:8080/api/turmas/unidade/${user.idUnidade}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTurmas(data);
+        setError(null);
+      } else {
+        setError('Erro ao carregar turmas');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar turmas:', error);
+      setError('Erro ao carregar turmas');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePesquisar = async () => {
+    if (!user?.idUnidade) return;
+    
+    if (!pesquisa.trim()) {
+      carregarTurmas();
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetchWithAuthSafe(`http://localhost:8080/api/turmas/unidade/${user.idUnidade}/pesquisa?termo=${encodeURIComponent(pesquisa)}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setTurmas(data);
+        setError(null);
+      } else {
+        setError('Erro na pesquisa');
+      }
+    } catch (error) {
+      console.error('Erro na pesquisa:', error);
+      setError('Erro na pesquisa');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCadastrar = () => {
     navigate("/cadastros/turmas/cadastro");
   };
 
-  const getStatusColor = (status: number) => {
-    switch (status) {
-      case 1: return "success"; // Ativa
-      case 0: return "error";   // Inativa
-      default: return "default";
+  const handleEditar = (id: number) => {
+    navigate(`/cadastros/turmas/cadastro/${id}`);
+  };
+
+  const handleExcluir = async (id: number) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta turma?')) {
+      return;
+    }
+
+    try {
+      const response = await fetchWithAuthSafe(`http://localhost:8080/api/turmas/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        await carregarTurmas();
+      } else {
+        setError('Erro ao excluir turma');
+      }
+    } catch (error) {
+      console.error('Erro ao excluir turma:', error);
+      setError('Erro ao excluir turma');
     }
   };
 
-  const getStatusLabel = (status: number) => {
-    switch (status) {
-      case 1: return "Ativa";
-      case 0: return "Inativa";
-      default: return "Indefinido";
+  const formatarHorario = (inicio: string, fim: string) => {
+    return `${inicio} - ${fim}`;
+  };
+
+  const formatarData = (data: string) => {
+    if (!data) return '-';
+    return new Date(data).toLocaleDateString('pt-BR');
+  };
+
+  const getClientIP = () => {
+    return '127.0.0.1';
+  };
+
+  const gerarHTMLImpressao = () => {
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
+    const horaAtual = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    
+    return `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Relatório - Turmas</title>
+        <style>
+          @media print {
+            body { margin: 0; padding: 20px; }
+            .no-print { display: none; }
+          }
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            color: #333;
+            line-height: 1.6;
+          }
+          .header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #1976d2;
+            padding-bottom: 20px;
+          }
+          .header-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+          }
+          .header-left {
+            flex: 0 0 auto;
+          }
+          .header-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+          }
+          .logo {
+            max-width: 120px;
+            max-height: 80px;
+            border-radius: 15px;
+            border: 2px solid #1976d2;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          }
+          .nome-unidade {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: -10px !important;
+          }
+          .titulo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 0px !important;
+          }
+          .subtitulo {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+            margin-top: -2px !important;
+          }
+          .info-relatorio {
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #666;
+          }
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+          }
+          .info-item {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+          }
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            font-size: 12px;
+          }
+          th, td { 
+            border: 1px solid #ddd; 
+            padding: 8px; 
+            text-align: left;
+          }
+          th { 
+            background-color: #f5f5f5; 
+            font-weight: bold;
+            color: #1976d2;
+          }
+          .status-ativo { color: #4caf50; font-weight: bold; }
+          .status-inativo { color: #f44336; font-weight: bold; }
+          .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            line-height: 1.2;
+          }
+          .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+          }
+          .print-button:hover {
+            background-color: #1565c0;
+          }
+          @media print {
+            .print-button {
+              display: none !important;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <button class="print-button" onclick="window.print()">🖨️ Imprimir</button>
+        
+        <div class="header">
+          <div class="header-content">
+            <div class="header-left">
+              ${logomarcaUnidade ? `<img src="${logomarcaUnidade}" alt="Logomarca" class="logo" onerror="this.style.display='none'">` : ''}
+            </div>
+            <div class="header-right">
+              <div class="nome-unidade">${fantasiaUnidade || `Unidade ${user?.idUnidade || ''}`}</div>
+              <div class="titulo">Lista de Turmas</div>
+              <div class="subtitulo">Sistema de Gestão para Escolas de Idiomas</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="info-relatorio">
+          <div class="info-row">
+            <div class="info-item"><strong>Data:</strong> ${dataAtual}</div>
+            <div class="info-item"><strong>Hora:</strong> ${horaAtual}</div>
+            <div class="info-item"><strong>Usuário:</strong> ${user?.name || 'N/A'}</div>
+            <div class="info-item"><strong>IP:</strong> ${getClientIP()}</div>
+            <div class="info-item"><strong>Total de Turmas:</strong> ${turmas.length}</div>
+          </div>
+        </div>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Turma</th>
+              <th>Nível</th>
+              <th>Ano</th>
+              <th>Horário</th>
+              <th>Professor</th>
+              <th>Sala</th>
+              <th>Alunos</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${turmas.map(turma => `
+              <tr>
+                <td><strong>${turma.nomeTurma}</strong></td>
+                <td>${turma.nivel}</td>
+                <td>${turma.ano}</td>
+                <td>${formatarHorario(turma.horaInicio, turma.horaFim)}</td>
+                <td>${turma.professorNome || '-'}</td>
+                <td>${turma.sala}</td>
+                <td>${turma.numeroAlunos || 0}/${turma.capacidadeMaxima}</td>
+                <td class="${turma.ativo ? 'status-ativo' : 'status-inativo'}">
+                  ${turma.ativo ? 'Ativa' : 'Inativa'}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        
+        <div class="footer">
+          <p>Relatório gerado automaticamente pelo sistema</p>
+          <p>© ${new Date().getFullYear()} - Sistema customidiomas.com.br</p>
+        </div>
+      </body>
+      </html>
+    `;
+  };
+
+  const imprimirTurmas = () => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(gerarHTMLImpressao());
+      printWindow.document.close();
+      printWindow.focus();
     }
   };
 
-  const getNivelColor = (nivel: string) => {
-    switch (nivel.toLowerCase()) {
-      case "básico": return "info";
-      case "intermediário": return "warning";
-      case "avançado": return "error";
-      default: return "default";
-    }
-  };
+  const turmasFiltradas = turmas.filter((turma) =>
+    turma.nomeTurma.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    turma.nivel.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    turma.sala.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    (turma.professorNome && turma.professorNome.toLowerCase().includes(pesquisa.toLowerCase()))
+  );
 
   return (
     <Box p={2}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5" fontWeight="bold">Cadastro de Turmas</Typography>
-        <Button 
-          variant="contained" 
-          startIcon={<AddIcon />} 
-          onClick={handleCadastrar}
-          sx={{ textTransform: 'none' }}
-        >
-          Cadastrar
-        </Button>
+      <Typography variant="h5" fontWeight="bold" sx={{ mt: -2.125, mb: 1.75 }}>
+        {t('turmas.titulo') || 'Turmas'}
+      </Typography>
+
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2.5}>
+        <Stack direction="row" spacing={1} alignItems="flex-end">
+          <TextField
+            label={t('turmas.pesquisarTurma') || 'Pesquisar turmas'}
+            variant="outlined"
+            size="small"
+            value={pesquisa}
+            onChange={(e) => setPesquisa(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                handlePesquisar();
+              }
+            }}
+            placeholder={t('turmas.placeholderPesquisa') || 'Nome, nível, sala...'}
+            sx={{ minWidth: 300 }}
+          />
+          <Button 
+            variant="outlined" 
+            startIcon={<SearchIcon />} 
+            onClick={handlePesquisar}
+            disabled={loading}
+            sx={{ textTransform: 'none', height: 40 }}
+          >
+            {t('common.pesquisar') || 'Pesquisar'}
+          </Button>
+          {pesquisa && (
+            <Button
+              variant="text"
+              onClick={() => {
+                setPesquisa('');
+                carregarTurmas();
+              }}
+              sx={{ textTransform: 'none', height: 40 }}
+            >
+              {t('common.limpar') || 'Limpar'}
+            </Button>
+          )}
+        </Stack>
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button 
+            variant="outlined" 
+            startIcon={<PrintIcon />} 
+            onClick={imprimirTurmas}
+            sx={{ textTransform: 'none', height: 40 }}
+          >
+            Imprimir
+          </Button>
+          <Button 
+            variant="contained" 
+            startIcon={<AddIcon />} 
+            onClick={handleCadastrar}
+            sx={{ textTransform: 'none', height: 40 }}
+          >
+            {t('common.cadastrar') || 'Cadastrar'}
+          </Button>
+        </Stack>
       </Stack>
 
-      <Stack direction="row" spacing={1} mb={2}>
-        <TextField
-          label="Pesquisar turma"
-          variant="outlined"
-          size="small"
-          value={pesquisa}
-          onChange={(e) => setPesquisa(e.target.value)}
-          placeholder="Nome, nível ou professor..."
-        />
-        <Button 
-          variant="outlined" 
-          startIcon={<SearchIcon />} 
-          sx={{ textTransform: 'none' }}
-        >
-          Pesquisar
-        </Button>
-      </Stack>
+      {/* Mensagem de erro */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
-      <TableContainer component={Paper}>
-        <Table size="small">
-          <TableHead>
-            <TableRow sx={{ height: 40 }}>
-              <TableCell>ID</TableCell>
-              <TableCell>Nome da Turma</TableCell>
-              <TableCell>Nível</TableCell>
-              <TableCell>Ano</TableCell>
-              <TableCell>Dias/Horário</TableCell>
-              <TableCell>Professor</TableCell>
-              <TableCell>Sala</TableCell>
-              <TableCell>Alunos</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">Ações</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {turmasFiltradas.map((turma) => (
-              <TableRow key={turma.id} sx={{ height: 50 }}>
-                <TableCell>{turma.id}</TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight="medium">
-                    {turma.nome_turma}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    label={turma.nivel} 
-                    color={getNivelColor(turma.nivel)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>{turma.ano}</TableCell>
-                <TableCell>
-                  <Typography variant="caption" display="block">
-                    {turma.dias_aula}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {turma.horario_inicio} - {turma.horario_fim}
-                  </Typography>
-                </TableCell>
-                <TableCell>{turma.professor_nome}</TableCell>
-                <TableCell>{turma.sala}</TableCell>
-                <TableCell>
-                  <Stack direction="row" alignItems="center" spacing={0.5}>
-                    <GroupIcon fontSize="small" color="action" />
-                    <Typography variant="body2">
-                      {turma.num_alunos}/{turma.capacidade_max}
+      {/* Tabela de turmas */}
+      <Paper>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ height: 40 }}>
+                <TableCell sx={{ fontWeight: 'bold' }}>Turma</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Nível</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Ano</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Horário</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Professor</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Sala</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Alunos</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Ações</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                    <CircularProgress size={24} />
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      Carregando...
                     </Typography>
-                  </Stack>
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    label={getStatusLabel(turma.status)} 
-                    color={getStatusColor(turma.status)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton color="primary" size="small" onClick={() => handleEditar(turma.id)}>
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton color="error" size="small" onClick={() => handleExcluir(turma.id)}>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            {turmasFiltradas.length === 0 && (
-              <TableRow sx={{ height: 50 }}>
-                <TableCell colSpan={10} align="center">
-                  Nenhuma turma encontrada.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  </TableCell>
+                </TableRow>
+              ) : turmasFiltradas.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Nenhuma turma encontrada
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                turmasFiltradas.map((turma) => (
+                  <TableRow key={turma.id} hover>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight="bold">
+                        {turma.nomeTurma}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{turma.nivel}</TableCell>
+                    <TableCell>{turma.ano}</TableCell>
+                    <TableCell>{formatarHorario(turma.horaInicio, turma.horaFim)}</TableCell>
+                    <TableCell>{turma.professorNome || '-'}</TableCell>
+                    <TableCell>{turma.sala}</TableCell>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight="medium">
+                        {turma.numeroAlunos || 0}/{turma.capacidadeMaxima}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={turma.ativo ? 'Ativa' : 'Inativa'}
+                        color={turma.ativo ? 'success' : 'error'}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Stack direction="row" spacing={1} justifyContent="flex-end">
+                        <Tooltip title="Editar Turma">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleEditar(turma.id)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Excluir">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleExcluir(turma.id)}
+                            color="error"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Box>
   );
 }

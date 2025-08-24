@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Valor Mensalidade</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #1976d2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #1565c0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste Valor Mensalidade</h1>
+        <p>Esta página testa diretamente o endpoint do backend para identificar o problema com o campo valor mensalidade.</p>
+        
+        <div class="form-group">
+            <label for="valor">Valor para Teste:</label>
+            <input type="text" id="valor" placeholder="Ex: 150, 150.50, R$ 150,00" value="150">
+        </div>
+        
+        <div class="form-group">
+            <label for="tipo">Tipo de Teste:</label>
+            <select id="tipo">
+                <option value="string">String (ex: "150")</option>
+                <option value="number">Number (ex: 150)</option>
+                <option value="formatted">Formatado (ex: "R$ 150,00")</option>
+            </select>
+        </div>
+        
+        <button onclick="testarValor()">🧪 Testar Valor</button>
+        <button onclick="limparResultado()">🗑️ Limpar</button>
+        <button onclick="testarMultiplosValores()">📊 Testar Múltiplos Valores</button>
+        <button onclick="testarBackend()" style="background-color: #28a745;">🔌 Testar Backend</button>
+        
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        async function testarValor() {
+            const valorInput = document.getElementById('valor').value;
+            const tipoSelect = document.getElementById('tipo').value;
+            
+            let valorParaEnviar = valorInput;
+            
+            // Converter baseado no tipo selecionado
+            if (tipoSelect === 'number') {
+                valorParaEnviar = parseFloat(valorInput) || 0;
+            }
+            
+            const payload = {
+                valor: valorParaEnviar
+            };
+            
+            mostrarResultado('info', `Enviando teste: ${JSON.stringify(payload)}`);
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/alunos/teste-valor-mensalidade', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const resultado = await response.json();
+                
+                if (response.ok) {
+                    mostrarResultado('success', `✅ TESTE BEM-SUCEDIDO!\n\n` +
+                        `Valor Original: ${resultado.valorOriginal} (${typeof resultado.valorOriginal})\n` +
+                        `Valor Convertido: ${resultado.valorConvertido}\n` +
+                        `Aluno Salvo ID: ${resultado.alunoSalvo.id}\n` +
+                        `Valor no Banco: ${resultado.alunoRecuperado.vlrMensalidade}\n\n` +
+                        `Resposta Completa:\n${JSON.stringify(resultado, null, 2)}`);
+                } else {
+                    mostrarResultado('error', `❌ ERRO NO TESTE!\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Erro: ${resultado.erro}\n\n` +
+                        `Detalhes:\n${JSON.stringify(resultado, null, 2)}`);
+                }
+                
+            } catch (error) {
+                mostrarResultado('error', `💥 ERRO DE CONEXÃO!\n\n` +
+                    `Erro: ${error.message}\n\n` +
+                    `Verifique se o backend está rodando em http://localhost:8080`);
+            }
+        }
+        
+        async function testarMultiplosValores() {
+            const valores = [
+                { valor: "150", desc: "String simples" },
+                { valor: 150, desc: "Number inteiro" },
+                { valor: "150.50", desc: "String decimal" },
+                { valor: 150.50, desc: "Number decimal" },
+                { valor: "R$ 150,00", desc: "String formatada" },
+                { valor: "0", desc: "Zero" },
+                { valor: "", desc: "String vazia" },
+                { valor: null, desc: "Null" }
+            ];
+            
+            mostrarResultado('info', '🧪 Iniciando testes múltiplos...\n\n');
+            
+            for (const teste of valores) {
+                try {
+                    const payload = { valor: teste.valor };
+                    
+                    const response = await fetch('http://localhost:8080/api/alunos/teste-valor-mensalidade', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const resultado = await response.json();
+                    
+                    if (response.ok) {
+                        mostrarResultado('success', `✅ ${teste.desc}: ${teste.valor} → ${resultado.valorConvertido} (ID: ${resultado.alunoSalvo.id})`);
+                    } else {
+                        mostrarResultado('error', `❌ ${teste.desc}: ${teste.valor} → ERRO: ${resultado.erro}`);
+                    }
+                    
+                    // Aguardar um pouco entre os testes
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                } catch (error) {
+                    mostrarResultado('error', `💥 ${teste.desc}: ${teste.valor} → ERRO DE CONEXÃO: ${error.message}`);
+                }
+            }
+            
+            mostrarResultado('info', '\n🎯 Testes múltiplos concluídos!');
+        }
+
+        async function testarBackend() {
+            mostrarResultado('info', '🔌 Testando se o backend está funcionando...');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/alunos/teste-simples', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    const resultado = await response.json();
+                    mostrarResultado('success', `✅ BACKEND FUNCIONANDO!\n\n` +
+                        `Mensagem: ${resultado.mensagem}\n` +
+                        `Status: ${resultado.status}\n` +
+                        `Timestamp: ${resultado.timestamp}\n\n` +
+                        `Agora você pode testar o valor mensalidade!`);
+                } else {
+                    mostrarResultado('error', `❌ BACKEND COM PROBLEMA!\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Status Text: ${response.statusText}\n\n` +
+                        `Verifique se o backend está rodando em http://localhost:8080`);
+                }
+                
+            } catch (error) {
+                mostrarResultado('error', `💥 ERRO DE CONEXÃO!\n\n` +
+                    `Erro: ${error.message}\n\n` +
+                    `O backend não está rodando ou não está acessível.\n` +
+                    `Execute: cd backend && mvn spring-boot:run`);
+            }
+        }
+        
+        function mostrarResultado(tipo, mensagem) {
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.className = `result ${tipo}`;
+            resultadoDiv.textContent = mensagem;
+        }
+        
+        function limparResultado() {
+            document.getElementById('resultado').textContent = '';
+        }
+        
+        // Teste automático ao carregar a página
+        window.onload = function() {
+            mostrarResultado('info', '🚀 Página carregada! Clique em "Testar Valor" para começar.\n\n' +
+                'Certifique-se de que o backend está rodando em http://localhost:8080');
+        };
+    </script>
+</body>
+</html>

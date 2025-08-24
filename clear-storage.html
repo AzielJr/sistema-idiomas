@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Limpar Storage</title>
+</head>
+<body>
+    <h1>Limpando localStorage...</h1>
+    <script>
+        // Limpar todo o localStorage
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Limpar cookies específicos do domínio
+        document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+        });
+        
+        console.log('✅ Storage limpo com sucesso!');
+        alert('Storage limpo! Agora você pode acessar http://localhost:5173');
+        
+        // Redirecionar após 2 segundos
+        setTimeout(() => {
+            window.location.href = 'http://localhost:5173';
+        }, 2000);
+    </script>
+</body>
+</html>

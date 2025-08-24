@@ -40,6 +40,7 @@ import {
   Category as CategoryIcon
 } from "@mui/icons-material";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Despesa {
   id: number;
@@ -66,6 +67,7 @@ interface Usuario {
 }
 
 export default function Despesas() {
+  const { t } = useTranslation();
   const [despesas, setDespesas] = useState<Despesa[]>([
     {
       id: 1,
@@ -360,7 +362,7 @@ export default function Despesas() {
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 fullWidth
-                label="Buscar"
+                label={t('common.buscar')}
                 value={filtros.busca}
                 onChange={(e) => setFiltros(prev => ({ ...prev, busca: e.target.value }))}
                 InputProps={{

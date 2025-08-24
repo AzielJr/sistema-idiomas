@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Valor Mensalidade - Simples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .field {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Valor Mensalidade - Versão Simples</h1>
+    
+    <div class="field">
+        <label for="valorMensalidade">Valor Mensalidade:</label>
+        <input 
+            type="text" 
+            id="valorMensalidade" 
+            placeholder="0.00"
+            value="0.00"
+        >
+        <div class="result">
+            <strong>Valor digitado:</strong> <span id="valorDigitado">0.00</span><br>
+            <strong>Tipo:</strong> <span id="tipoValor">string</span><br>
+            <strong>Length:</strong> <span id="lengthValor">4</span>
+        </div>
+    </div>
+
+    <div class="field">
+        <button onclick="testarEnvio()">🧪 Testar Envio</button>
+    </div>
+
+    <div class="result" id="resultadoEnvio" style="display: none;">
+        <h3>📤 Dados para Enviar:</h3>
+        <pre id="dadosEnvio"></pre>
+    </div>
+
+    <script>
+        const input = document.getElementById('valorMensalidade');
+        const valorDigitado = document.getElementById('valorDigitado');
+        const tipoValor = document.getElementById('tipoValor');
+        const lengthValor = document.getElementById('lengthValor');
+
+        // Função ultra simples para formatar valor
+        function formatarValor(value) {
+            // Aceita apenas números e ponto
+            const valor = value.replace(/[^\d.]/g, '');
+            return valor || '0.00';
+        }
+
+        // Atualizar display em tempo real
+        input.addEventListener('input', function(e) {
+            const valor = e.target.value;
+            const valorFormatado = formatarValor(valor);
+            
+            // Atualizar o input com valor formatado
+            e.target.value = valorFormatado;
+            
+            // Atualizar display
+            valorDigitado.textContent = valorFormatado;
+            tipoValor.textContent = typeof valorFormatado;
+            lengthValor.textContent = valorFormatado.length;
+        });
+
+        function testarEnvio() {
+            const valor = input.value;
+            const dados = {
+                nome: 'Aluno Teste',
+                cpf: '123.456.789-00',
+                vlrMensalidade: valor,
+                tipo: typeof valor,
+                length: valor.length
+            };
+
+            document.getElementById('dadosEnvio').textContent = JSON.stringify(dados, null, 2);
+            document.getElementById('resultadoEnvio').style.display = 'block';
+
+            console.log('🧪 Dados para envio:', dados);
+            console.log('🧪 Valor mensalidade:', valor);
+            console.log('🧪 Tipo:', typeof valor);
+        }
+
+        // Teste inicial
+        console.log('🧪 Teste iniciado!');
+        console.log('🧪 Valor inicial:', input.value);
+        console.log('🧪 Tipo inicial:', typeof input.value);
+    </script>
+</body>
+</html>

@@ -18,10 +18,12 @@ import Aulas from "../pages/Aulas";
 import AulasCadastro from "../pages/AulasCadastro";
 import MinhaAgenda from "../pages/MinhaAgenda";
 import PlanoAulas from "../pages/PlanoAulas";
+import PlanoAulaCadastro from "../pages/PlanoAulaCadastro";
 import PresencaFaltas from "../pages/PresencaFaltas";
 import ProjetoLeitura from "../pages/ProjetoLeitura";
 import ProjetoEscrita from "../pages/ProjetoEscrita";
 import Unidade from "../pages/Unidade";
+import UnidadesCadastro from "../pages/UnidadesCadastro";
 import GruposAcesso from "../pages/GruposAcesso";
 import Usuarios from "../pages/Usuarios";
 import LogSistema from "../pages/LogSistema"; 
@@ -56,6 +58,7 @@ export default function AppRotas(){
 
                 <Route path="/cadastros/alunos" element={<Alunos />} />
                 <Route path="/cadastros/alunos/cadastro" element={<AlunosCadastro />} />
+                <Route path="/cadastros/alunos/cadastro/:id" element={<AlunosCadastro />} />
                 
                 <Route path="/cadastros/professores" element={<Professores />} />
                 <Route path="/cadastros/professores/cadastro" element={<ProfessoresCadastro />} />
@@ -73,15 +76,19 @@ export default function AppRotas(){
                 <Route path="/cadastros/aulas/cadastro" element={<AulasCadastro />} />
                 <Route path="/cadastros/aulas/cadastro/:id" element={<AulasCadastro />} />
                 
-                <Route path="/agenda/default" element={<MinhaAgenda />} />
-                
                 <Route path="/movimentacoes/plano-aulas" element={<PlanoAulas />} />
+                <Route path="/plano-aulas" element={<PlanoAulas />} />
+                <Route path="/plano-aulas/cadastro" element={<PlanoAulaCadastro />} />
+                <Route path="/plano-aulas/:id" element={<PlanoAulaCadastro />} />
+                <Route path="/plano-aulas/:id/editar" element={<PlanoAulaCadastro />} />
                 <Route path="/movimentacoes/presenca-faltas" element={<PresencaFaltas />} />
                 
                 <Route path="/projetos/leitura" element={<ProjetoLeitura />} />
                 <Route path="/projetos/escrita" element={<ProjetoEscrita />} />
                 
                 <Route path="/administracao/unidade" element={<Unidade />} />
+                <Route path="/administracao/unidade/cadastro" element={<UnidadesCadastro />} />
+                <Route path="/administracao/unidade/cadastro/:id" element={<UnidadesCadastro />} />
                 <Route path="/administracao/grupos-acesso" element={<GruposAcesso />} />
                 <Route path="/administracao/usuarios" element={<Usuarios />} />
                 <Route path="/administracao/log-sistema" element={<LogSistema />} />

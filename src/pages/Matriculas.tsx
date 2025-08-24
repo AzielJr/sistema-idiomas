@@ -214,7 +214,7 @@ export default function Matriculas() {
             <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
-                label="Buscar"
+                label={t('common.buscar')}
                 value={filtros.busca}
                 onChange={(e) => setFiltros(prev => ({ ...prev, busca: e.target.value }))}
                 InputProps={{
@@ -299,7 +299,7 @@ export default function Matriculas() {
               onClick={() => abrirDialog()}
               sx={{ ml: 2 }}
             >
-              Cadastrar
+              {t('matriculas.cadastrar')}
             </Button>
           </Box>
         </CardContent>
@@ -311,14 +311,14 @@ export default function Matriculas() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Aluno</TableCell>
-                <TableCell>Data Matrícula</TableCell>
-                <TableCell>Data Cancelamento</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Usuário</TableCell>
-                <TableCell>IP Cadastro</TableCell>
-                <TableCell align="center">Ações</TableCell>
+                <TableCell>{t('matriculas.id')}</TableCell>
+                <TableCell>{t('matriculas.aluno')}</TableCell>
+                <TableCell>{t('matriculas.dataMatricula')}</TableCell>
+                <TableCell>{t('matriculas.dataCancelamento')}</TableCell>
+                <TableCell>{t('matriculas.status')}</TableCell>
+                <TableCell>{t('matriculas.usuario')}</TableCell>
+                <TableCell>{t('matriculas.ipCadastro')}</TableCell>
+                <TableCell align="center">{t('matriculas.acoes')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -513,10 +513,10 @@ export default function Matriculas() {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={fecharDialog}>Cancelar</Button>
+          <Button onClick={fecharDialog}>{t('common.cancelar')}</Button>
           <Button onClick={salvarMatricula} variant="contained">
-            {matriculaEditando ? 'Salvar' : 'Adicionar'}
-          </Button>
+              {matriculaEditando ? t('common.salvar') : t('common.adicionar')}
+            </Button>
         </DialogActions>
       </Dialog>
     </Box>

@@ -11,74 +11,214 @@ import {
   Stack,
   TextField,
   Typography,
-  Paper
+  Paper,
+  Chip,
+  Switch
 } from "@mui/material";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContextSimple";
 
 export default function TurmasCadastro() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { user, fetchWithAuthSafe } = useAuth();
+  const isEditando = Boolean(id);
 
   const [turma, setTurma] = useState({
-    nome_turma: "",
+    nomeTurma: "",
     nivel: "",
-    ano: new Date().getFullYear(),
-    dias_aula: "",
-    horario_inicio: "",
-    horario_fim: "",
-    professores_id: "",
+    ano: new Date().getFullYear().toString(),
+    horaInicio: "",
+    horaFim: "",
+    aulaSeg: false,
+    aulaTer: false,
+    aulaQua: false,
+    aulaQui: false,
+    aulaSex: false,
+    aulaSab: false,
+    idProfessor: null as number | null,
     sala: "",
-    capacidade_max: "",
-    material_didatico_id: "",
-    num_alunos: 0,
-    coordenador_id: "",
-    teste: "",
-    diadeaula_segunda: false,
-    diadeaula_terca: false,
-    diadeaula_quarta: false,
-    diadeaula_quinta: false,
-    diadeaula_sexta: false,
-    diadeaula_sabado: false,
-    status: 1
+    capacidadeMaxima: "",
+    idMaterialDidatico: null as number | null,
+    numeroAlunos: 0,
+    idCoordenador: null as number | null,
+    observacoes: "",
+    ativo: true,
+    idUnidade: user?.idUnidade || 0
   });
 
   const handleChange = (field: string, value: any) => {
     setTurma((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSalvar = () => {
-    alert("Salvar cadastro (futuro): " + JSON.stringify(turma, null, 2));
+  const handleSalvar = async () => {
+    try {
+      setLoading(true);
+      
+      const dadosParaEnviar = {
+        ...turma,
+        capacidadeMaxima: parseInt(turma.capacidadeMaxima.toString()),
+        idUnidade: user?.idUnidade || 0
+      };
+      
+      const url = isEditando 
+        ? `http://localhost:8080/api/turmas/${id}`
+        : 'http://localhost:8080/api/turmas';
+      
+      const method = isEditando ? 'PUT' : 'POST';
+      
+      const response = await fetchWithAuthSafe(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dadosParaEnviar)
+      });
+      
+      if (response.ok) {
+        alert(isEditando ? 'Turma atualizada com sucesso!' : 'Turma criada com sucesso!');
+        navigate('/cadastros/turmas');
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao salvar: ${errorData.message || 'Erro desconhecido'}`);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar turma:', error);
+      alert('Erro ao salvar turma. Verifique o console para mais detalhes.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleVoltar = () => {
     navigate("/cadastros/turmas");
   };
 
-  // Mock data para os selects
-  const professores = [
-    { id: 1, nome: "Ana Silva" },
-    { id: 2, nome: "Carlos Santos" },
-    { id: 3, nome: "Maria Oliveira" },
-    { id: 4, nome: "João Pereira" }
-  ];
+  // Dados reais do backend
+  const [professores, setProfessores] = useState<Array<{id: number, nome: string}>>([]);
+  const [coordenadores, setCoordenadores] = useState<Array<{id: number, nome: string}>>([]);
+  const [materiaisDidaticos, setMateriaisDidaticos] = useState<Array<{id: number, nome: string}>>([]);
+  const [loading, setLoading] = useState(false);
 
-  const coordenadores = [
-    { id: 1, nome: "Carlos Santos" },
-    { id: 2, nome: "Maria Oliveira" },
-    { id: 3, nome: "Ana Silva" }
-  ];
+  // Carregar dados relacionados
+  useEffect(() => {
+    const carregarDados = async () => {
+      if (!user?.idUnidade) return;
+      
+      try {
+        setLoading(true);
+        
+        // Carregar professores
+        const responseProfessores = await fetchWithAuthSafe(`http://localhost:8080/api/turmas/professores/${user.idUnidade}`);
+        if (responseProfessores.ok) {
+          const data = await responseProfessores.json();
+          setProfessores(data.map((p: any) => ({ id: p.id, nome: p.nome })));
+        }
+        
+        // Carregar coordenadores
+        const responseCoordenadores = await fetchWithAuthSafe(`http://localhost:8080/api/turmas/coordenadores/${user.idUnidade}`);
+        if (responseCoordenadores.ok) {
+          const data = await responseCoordenadores.json();
+          setCoordenadores(data.map((c: any) => ({ id: c.id, nome: c.userName })));
+        }
+        
+        // Carregar materiais didáticos
+        const responseMateriais = await fetchWithAuthSafe(`http://localhost:8080/api/turmas/materiais/${user.idUnidade}`);
+        if (responseMateriais.ok) {
+          const data = await responseMateriais.json();
+          setMateriaisDidaticos(data.map((m: any) => ({ id: m.id, nome: m.nome })));
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const materiaisDidaticos = [
-    { id: 1, nome: "English Grammar in Use" },
-    { id: 2, nome: "New Headway Elementary" },
-    { id: 3, nome: "Business English Course" },
-    { id: 4, nome: "Cambridge English Course" }
-  ];
+    carregarDados();
+  }, [user?.idUnidade, fetchWithAuthSafe]);
+
+  // Carregar turma se estiver editando
+  useEffect(() => {
+    const carregarTurma = async () => {
+      if (!id || !fetchWithAuthSafe || !user?.idUnidade) return;
+      
+      try {
+        setLoading(true);
+        
+        // Primeiro carregar as listas necessárias
+        const [responseProfessores, responseCoordenadores, responseMateriais, responseTurma] = await Promise.all([
+          fetchWithAuthSafe(`http://localhost:8080/api/turmas/professores/${user.idUnidade}`),
+          fetchWithAuthSafe(`http://localhost:8080/api/turmas/coordenadores/${user.idUnidade}`),
+          fetchWithAuthSafe(`http://localhost:8080/api/turmas/materiais/${user.idUnidade}`),
+          fetchWithAuthSafe(`http://localhost:8080/api/turmas/${id}`)
+        ]);
+        
+        // Carregar professores
+        if (responseProfessores.ok) {
+          const data = await responseProfessores.json();
+          setProfessores(data.map((p: any) => ({ id: p.id, nome: p.nome })));
+        }
+        
+        // Carregar coordenadores
+        if (responseCoordenadores.ok) {
+          const data = await responseCoordenadores.json();
+          setCoordenadores(data.map((c: any) => ({ id: c.id, nome: c.nome })));
+        }
+        
+        // Carregar materiais didáticos
+        if (responseMateriais.ok) {
+          const data = await responseMateriais.json();
+          setMateriaisDidaticos(data.map((m: any) => ({ id: m.id, nome: m.nome })));
+        }
+        
+        // Carregar dados da turma
+        if (responseTurma.ok) {
+          const data = await responseTurma.json();
+          setTurma({
+            nomeTurma: data.nomeTurma || "",
+            nivel: data.nivel || "",
+            ano: data.ano || new Date().getFullYear().toString(),
+            horaInicio: data.horaInicio || "",
+            horaFim: data.horaFim || "",
+            aulaSeg: data.aulaSeg || false,
+            aulaTer: data.aulaTer || false,
+            aulaQua: data.aulaQua || false,
+            aulaQui: data.aulaQui || false,
+            aulaSex: data.aulaSex || false,
+            aulaSab: data.aulaSab || false,
+            idProfessor: data.idProfessor || null,
+            sala: data.sala || "",
+            capacidadeMaxima: data.capacidadeMaxima?.toString() || "",
+            idMaterialDidatico: data.idMaterialDidatico || null,
+            numeroAlunos: data.numeroAlunos || 0,
+            idCoordenador: data.idCoordenador || null,
+            observacoes: data.observacoes || "",
+            ativo: data.ativo !== undefined ? data.ativo : true,
+            idUnidade: user?.idUnidade || 0
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao carregar turma:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarTurma();
+  }, [id, fetchWithAuthSafe, user?.idUnidade]);
 
   return (
     <Box p={{xs:1, sm:2, md:3}}>
-      <Typography variant="h5" fontWeight="bold" mb={2}>
-        Cadastro / Edição de Turma
+      <Typography variant="h5" fontWeight="bold" mb={2} sx={{ mt: -5 }}>
+        {isEditando ? (
+          <>
+            Edição de Turma: <span style={{ color: '#1976d2' }}>{turma.nomeTurma}</span>
+          </>
+        ) : (
+          'Cadastro de Turma'
+        )}
       </Typography>
 
       <Stack spacing={3}>
@@ -91,8 +231,8 @@ export default function TurmasCadastro() {
           <Stack spacing={2}>
             <TextField
               label="Nome da Turma"
-              value={turma.nome_turma}
-              onChange={(e) => handleChange("nome_turma", e.target.value)}
+              value={turma.nomeTurma}
+              onChange={(e) => handleChange("nomeTurma", e.target.value)}
               fullWidth
               required
             />
@@ -125,9 +265,9 @@ export default function TurmasCadastro() {
               <Grid size={{xs:12, sm:6}}>
                 <TextField
                   label="Ano"
-                  type="number"
+                  type="text"
                   value={turma.ano}
-                  onChange={(e) => handleChange("ano", parseInt(e.target.value))}
+                  onChange={(e) => handleChange("ano", e.target.value)}
                   fullWidth
                   required
                 />
@@ -139,8 +279,8 @@ export default function TurmasCadastro() {
                 <TextField
                   label="Horário de Início"
                   type="time"
-                  value={turma.horario_inicio}
-                  onChange={(e) => handleChange("horario_inicio", e.target.value)}
+                  value={turma.horaInicio}
+                  onChange={(e) => handleChange("horaInicio", e.target.value)}
                   fullWidth
                   InputLabelProps={{
                     shrink: true,
@@ -151,8 +291,8 @@ export default function TurmasCadastro() {
                 <TextField
                   label="Horário de Fim"
                   type="time"
-                  value={turma.horario_fim}
-                  onChange={(e) => handleChange("horario_fim", e.target.value)}
+                  value={turma.horaFim}
+                  onChange={(e) => handleChange("horaFim", e.target.value)}
                   fullWidth
                   InputLabelProps={{
                     shrink: true,
@@ -174,8 +314,8 @@ export default function TurmasCadastro() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={turma.diadeaula_segunda}
-                    onChange={(e) => handleChange("diadeaula_segunda", e.target.checked)}
+                    checked={turma.aulaSeg}
+                    onChange={(e) => handleChange("aulaSeg", e.target.checked)}
                   />
                 }
                 label="Segunda"
@@ -185,8 +325,8 @@ export default function TurmasCadastro() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={turma.diadeaula_terca}
-                    onChange={(e) => handleChange("diadeaula_terca", e.target.checked)}
+                    checked={turma.aulaTer}
+                    onChange={(e) => handleChange("aulaTer", e.target.checked)}
                   />
                 }
                 label="Terça"
@@ -196,8 +336,8 @@ export default function TurmasCadastro() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={turma.diadeaula_quarta}
-                    onChange={(e) => handleChange("diadeaula_quarta", e.target.checked)}
+                    checked={turma.aulaQua}
+                    onChange={(e) => handleChange("aulaQua", e.target.checked)}
                   />
                 }
                 label="Quarta"
@@ -207,8 +347,8 @@ export default function TurmasCadastro() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={turma.diadeaula_quinta}
-                    onChange={(e) => handleChange("diadeaula_quinta", e.target.checked)}
+                    checked={turma.aulaQui}
+                    onChange={(e) => handleChange("aulaQui", e.target.checked)}
                   />
                 }
                 label="Quinta"
@@ -218,8 +358,8 @@ export default function TurmasCadastro() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={turma.diadeaula_sexta}
-                    onChange={(e) => handleChange("diadeaula_sexta", e.target.checked)}
+                    checked={turma.aulaSex}
+                    onChange={(e) => handleChange("aulaSex", e.target.checked)}
                   />
                 }
                 label="Sexta"
@@ -229,8 +369,8 @@ export default function TurmasCadastro() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={turma.diadeaula_sabado}
-                    onChange={(e) => handleChange("diadeaula_sabado", e.target.checked)}
+                    checked={turma.aulaSab}
+                    onChange={(e) => handleChange("aulaSab", e.target.checked)}
                   />
                 }
                 label="Sábado"
@@ -251,8 +391,8 @@ export default function TurmasCadastro() {
                 <FormControl fullWidth size="medium">
                   <InputLabel sx={{ fontSize: '16px' }}>Professor</InputLabel>
                   <Select
-                    value={turma.professores_id}
-                    onChange={(e) => handleChange("professores_id", e.target.value)}
+                    value={turma.idProfessor || ""}
+                    onChange={(e) => handleChange("idProfessor", e.target.value ? parseInt(e.target.value) : null)}
                     label="Professor"
                     sx={{
                       minHeight: '56px',
@@ -275,8 +415,8 @@ export default function TurmasCadastro() {
                 <FormControl fullWidth size="medium">
                   <InputLabel sx={{ fontSize: '16px' }}>Coordenador</InputLabel>
                   <Select
-                    value={turma.coordenador_id}
-                    onChange={(e) => handleChange("coordenador_id", e.target.value)}
+                    value={turma.idCoordenador || ""}
+                    onChange={(e) => handleChange("idCoordenador", e.target.value ? parseInt(e.target.value) : null)}
                     label="Coordenador"
                     sx={{
                       minHeight: '56px',
@@ -300,8 +440,8 @@ export default function TurmasCadastro() {
             <FormControl fullWidth size="medium">
               <InputLabel sx={{ fontSize: '16px' }}>Material Didático</InputLabel>
               <Select
-                value={turma.material_didatico_id}
-                onChange={(e) => handleChange("material_didatico_id", e.target.value)}
+                value={turma.idMaterialDidatico || ""}
+                onChange={(e) => handleChange("idMaterialDidatico", e.target.value ? parseInt(e.target.value) : null)}
                 label="Material Didático"
                 sx={{
                   minHeight: '56px',
@@ -333,8 +473,8 @@ export default function TurmasCadastro() {
                 <TextField
                   label="Capacidade Máxima"
                   type="number"
-                  value={turma.capacidade_max}
-                  onChange={(e) => handleChange("capacidade_max", e.target.value)}
+                  value={turma.capacidadeMaxima}
+                  onChange={(e) => handleChange("capacidadeMaxima", e.target.value)}
                   fullWidth
                 />
               </Grid>
@@ -342,8 +482,8 @@ export default function TurmasCadastro() {
                 <TextField
                   label="Número de Alunos"
                   type="number"
-                  value={turma.num_alunos}
-                  onChange={(e) => handleChange("num_alunos", parseInt(e.target.value))}
+                  value={turma.numeroAlunos}
+                  onChange={(e) => handleChange("numeroAlunos", parseInt(e.target.value))}
                   fullWidth
                   disabled
                 />
@@ -360,58 +500,59 @@ export default function TurmasCadastro() {
           
           <Stack spacing={2}>
             <TextField
-              label="Teste"
-              value={turma.teste}
-              onChange={(e) => handleChange("teste", e.target.value)}
+              label="Observações"
+              value={turma.observacoes}
+              onChange={(e) => handleChange("observacoes", e.target.value)}
               fullWidth
               multiline
-              rows={2}
+              rows={3}
+              placeholder="Informações adicionais sobre a turma..."
             />
 
-            <TextField
-              label="Dias de Aula (Resumo)"
-              value={turma.dias_aula}
-              onChange={(e) => handleChange("dias_aula", e.target.value)}
-              fullWidth
-              placeholder="Ex: Segunda, Quarta, Sexta"
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={turma.ativo || false}
+                  onChange={(e) => handleChange("ativo", e.target.checked)}
+                  color={turma.ativo ? "primary" : "error"}
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: turma.ativo ? '#1976d2' : '#d32f2f',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: turma.ativo ? '#1976d2' : '#d32f2f',
+                    },
+                    '& .MuiSwitch-switchBase': {
+                      color: turma.ativo ? '#1976d2' : '#d32f2f',
+                    },
+                    '& .MuiSwitch-track': {
+                      backgroundColor: turma.ativo ? '#1976d2' : '#d32f2f',
+                    }
+                  }}
+                />
+              }
+              label={turma.ativo ? 'Ativa' : 'Inativa'}
             />
-
-            <FormControl fullWidth size="medium">
-              <InputLabel sx={{ fontSize: '16px' }}>Status</InputLabel>
-              <Select
-                value={turma.status}
-                onChange={(e) => handleChange("status", e.target.value)}
-                label="Status"
-                sx={{
-                  minHeight: '56px',
-                  '& .MuiSelect-select': {
-                    fontSize: '16px',
-                    padding: '16px 14px'
-                  }
-                }}
-              >
-                <MenuItem value={1}>Ativa</MenuItem>
-                <MenuItem value={0}>Inativa</MenuItem>
-              </Select>
-            </FormControl>
           </Stack>
         </Paper>
 
         {/* Botões de Ação */}
-        <Box display="flex" gap={2} mt={3}>
-          <Button 
-            variant="contained" 
-            onClick={handleSalvar} 
-            sx={{ textTransform: 'none' }}
-          >
-            Salvar
-          </Button>
+        <Box display="flex" gap={2} mt={3} justifyContent="flex-end">
           <Button 
             variant="outlined" 
             onClick={handleVoltar} 
             sx={{ textTransform: 'none' }}
+            disabled={loading}
           >
             Voltar
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={handleSalvar} 
+            sx={{ textTransform: 'none' }}
+            disabled={loading}
+          >
+            {loading ? 'Salvando...' : 'Salvar'}
           </Button>
         </Box>
       </Stack>

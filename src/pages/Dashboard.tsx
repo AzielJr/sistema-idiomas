@@ -13,6 +13,7 @@ import {
   Divider,
   IconButton
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   TrendingDown,
@@ -30,6 +31,7 @@ import ListaComentarios from '../components/ListaComentarios';
 import { useState } from 'react';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
   // Dados simulados para os gráficos e estatísticas
@@ -86,10 +88,10 @@ export default function Dashboard() {
       {/* Header do Dashboard */}
       <Box sx={{ mb: 4, position: 'relative', zIndex: 1 }}>
         <Typography variant="h4" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
-          Dashboard
+          {t('dashboard.titulo')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Visão geral do sistema de gestão escolar
+          {t('dashboard.subtitulo')}
         </Typography>
       </Box>
 
@@ -130,7 +132,7 @@ export default function Dashboard() {
                       {estatisticas.totalAlunos}
                     </Typography>
                     <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                      Total de Alunos
+                      {t('dashboard.totalAlunos')}
                     </Typography>
                   </Box>
                   <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
@@ -139,7 +141,7 @@ export default function Dashboard() {
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TrendingUp sx={{ fontSize: 16 }} />
-                  <Typography variant="caption">+12% este mês</Typography>
+                  <Typography variant="caption">{t('dashboard.aumentoMes', { valor: '+12%' })}</Typography>
                 </Box>
               </CardContent>
             </Card>
@@ -168,7 +170,7 @@ export default function Dashboard() {
                       {estatisticas.turmasAtivas}
                     </Typography>
                     <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                      Turmas Ativas
+                      {t('dashboard.turmasAtivas')}
                     </Typography>
                   </Box>
                   <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
@@ -177,7 +179,7 @@ export default function Dashboard() {
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TrendingUp sx={{ fontSize: 16 }} />
-                  <Typography variant="caption">+5% este mês</Typography>
+                  <Typography variant="caption">{t('dashboard.aumentoMes', { valor: '+5%' })}</Typography>
                 </Box>
               </CardContent>
             </Card>
@@ -206,7 +208,7 @@ export default function Dashboard() {
                       {estatisticas.professores}
                     </Typography>
                     <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                      Professores
+                      {t('dashboard.professores')}
                     </Typography>
                   </Box>
                   <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
@@ -215,7 +217,7 @@ export default function Dashboard() {
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TrendingUp sx={{ fontSize: 16 }} />
-                  <Typography variant="caption">+2 novos</Typography>
+                  <Typography variant="caption">{t('dashboard.novos', { quantidade: '+2' })}</Typography>
                 </Box>
               </CardContent>
             </Card>
@@ -244,7 +246,7 @@ export default function Dashboard() {
                       R$ 89.5K
                     </Typography>
                     <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                      Receita Mensal
+                      {t('dashboard.receitaMensal')}
                     </Typography>
                   </Box>
                   <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
@@ -253,7 +255,7 @@ export default function Dashboard() {
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TrendingUp sx={{ fontSize: 16 }} />
-                  <Typography variant="caption">+8% este mês</Typography>
+                  <Typography variant="caption">{t('dashboard.aumentoMes', { valor: '+8%' })}</Typography>
                 </Box>
               </CardContent>
             </Card>
@@ -275,7 +277,7 @@ export default function Dashboard() {
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                  Matrículas
+                  {t('dashboard.matriculas')}
                 </Typography>
                 <Chip label="+12%" size="small" color="success" />
               </Box>
@@ -283,7 +285,7 @@ export default function Dashboard() {
                 {estatisticas.matriculasNovas}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Novas este mês
+                {t('dashboard.novasEsteMes')}
               </Typography>
               <LinearProgress 
                 variant="determinate" 
@@ -306,7 +308,7 @@ export default function Dashboard() {
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                  Pagamentos
+                  {t('dashboard.pagamentos')}
                 </Typography>
                 <Chip label="92%" size="small" color="success" />
               </Box>
@@ -314,7 +316,7 @@ export default function Dashboard() {
                 {estatisticas.mensalidadesEmDia}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Em dia
+                {t('dashboard.emDia')}
               </Typography>
               <LinearProgress 
                 variant="determinate" 
@@ -338,7 +340,7 @@ export default function Dashboard() {
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                  Pendências
+                  {t('dashboard.pendencias')}
                 </Typography>
                 <Chip label="8%" size="small" color="warning" />
               </Box>
@@ -346,7 +348,7 @@ export default function Dashboard() {
                 {estatisticas.mensalidadesAtrasadas}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Em atraso
+                {t('dashboard.emAtraso')}
               </Typography>
               <LinearProgress 
                 variant="determinate" 
@@ -370,7 +372,7 @@ export default function Dashboard() {
             }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600, color: '#1a1a1a' }}>
-                  Ativos
+                  {t('dashboard.ativos')}
                 </Typography>
                 <Chip label="96%" size="small" color="info" />
               </Box>
@@ -378,7 +380,7 @@ export default function Dashboard() {
                 {estatisticas.alunosAtivos}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Alunos ativos
+                {t('dashboard.alunosAtivos')}
               </Typography>
               <LinearProgress 
                 variant="determinate" 

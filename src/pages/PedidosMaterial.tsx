@@ -38,6 +38,7 @@ import {
   Person as PersonIcon
 } from "@mui/icons-material";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PedidoMaterial {
   id: number;
@@ -65,6 +66,7 @@ interface Material {
 }
 
 export default function PedidosMaterial() {
+  const { t } = useTranslation();
   const [pedidos, setPedidos] = useState<PedidoMaterial[]>([
     {
       id: 1,
@@ -315,7 +317,7 @@ export default function PedidosMaterial() {
             <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
-                label="Buscar"
+                label={t('common.buscar')}
                 value={filtros.busca}
                 onChange={(e) => setFiltros(prev => ({ ...prev, busca: e.target.value }))}
                 InputProps={{

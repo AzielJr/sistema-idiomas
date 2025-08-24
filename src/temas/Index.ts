@@ -37,6 +37,7 @@ const theme = createTheme({
         root: {
           borderRadius: 8,
           padding: '10px 20px',
+          textTransform: 'none',
         },
       },
     },

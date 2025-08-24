@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface Aula {
   id: number;
@@ -39,6 +40,7 @@ interface Aula {
 
 export default function Aulas() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [pesquisa, setPesquisa] = useState("");
 
@@ -100,7 +102,7 @@ export default function Aulas() {
   );
 
   const handleExcluir = (id: number) => {
-    if (window.confirm("Confirma a exclusão desta aula?")) {
+    if (window.confirm(t('aulas.confirmarExclusaoAula'))) {
       setAulas(aulas.filter((aula) => aula.id !== id));
     }
   };
@@ -123,9 +125,9 @@ export default function Aulas() {
 
   const getStatusLabel = (status: number) => {
     switch (status) {
-      case 1: return "Ativa";
-      case 0: return "Inativa";
-      default: return "Indefinido";
+      case 1: return t('turmas.ativa');
+      case 0: return t('turmas.inativa');
+      default: return t('turmas.indefinido');
     }
   };
 
@@ -137,32 +139,32 @@ export default function Aulas() {
   return (
     <Box p={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5" fontWeight="bold">Cadastro de Aulas</Typography>
+        <Typography variant="h5" fontWeight="bold">{t('aulas.titulo')}</Typography>
         <Button 
           variant="contained" 
           startIcon={<AddIcon />} 
           onClick={handleCadastrar}
           sx={{ textTransform: 'none' }}
         >
-          Cadastrar
+          {t('common.cadastrar')}
         </Button>
       </Stack>
 
       <Stack direction="row" spacing={1} mb={2}>
         <TextField
-          label="Pesquisar aula"
+          label={t('aulas.pesquisarAula')}
           variant="outlined"
           size="small"
           value={pesquisa}
           onChange={(e) => setPesquisa(e.target.value)}
-          placeholder="Turma, professor ou data..."
+          placeholder={t('aulas.placeholderPesquisaAula')}
         />
         <Button 
           variant="outlined" 
           startIcon={<SearchIcon />} 
           sx={{ textTransform: 'none' }}
         >
-          Pesquisar
+          {t('common.pesquisar')}
         </Button>
       </Stack>
 
@@ -171,13 +173,13 @@ export default function Aulas() {
           <TableHead>
             <TableRow sx={{ height: 40 }}>
               <TableCell>ID</TableCell>
-              <TableCell>Turma</TableCell>
-              <TableCell>Data da Aula</TableCell>
-              <TableCell>Horário</TableCell>
-              <TableCell>Professor</TableCell>
-              <TableCell>Nº Aula</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">Ações</TableCell>
+              <TableCell>{t('aulas.turma')}</TableCell>
+              <TableCell>{t('aulas.dataAula')}</TableCell>
+              <TableCell>{t('aulas.horario')}</TableCell>
+              <TableCell>{t('turmas.professor')}</TableCell>
+              <TableCell>{t('aulas.numeroAula')}</TableCell>
+              <TableCell>{t('common.status')}</TableCell>
+              <TableCell align="right">{t('common.acoes')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -205,7 +207,7 @@ export default function Aulas() {
                 <TableCell>{aula.professor_nome}</TableCell>
                 <TableCell>
                   <Typography variant="body2" fontWeight="medium">
-                    Aula {aula.aulas}
+                    {t('aulas.aula')} {aula.aulas}
                   </Typography>
                 </TableCell>
                 <TableCell>
@@ -228,7 +230,7 @@ export default function Aulas() {
             {aulasFiltradas.length === 0 && (
               <TableRow sx={{ height: 50 }}>
                 <TableCell colSpan={8} align="center">
-                  Nenhuma aula encontrada.
+                  {t('aulas.nenhumaAulaEncontrada')}
                 </TableCell>
               </TableRow>
             )}

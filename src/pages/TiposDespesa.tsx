@@ -32,6 +32,7 @@ import {
   Category as CategoryIcon
 } from "@mui/icons-material";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface TipoDespesa {
   id: number;
@@ -42,6 +43,7 @@ interface TipoDespesa {
 }
 
 export default function TiposDespesa() {
+  const { t } = useTranslation();
   const [tiposDespesa, setTiposDespesa] = useState<TipoDespesa[]>([
     {
       id: 1,
@@ -286,7 +288,7 @@ export default function TiposDespesa() {
             <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
-                label="Buscar"
+                label={t('common.buscar')}
                 value={filtros.busca}
                 onChange={(e) => setFiltros(prev => ({ ...prev, busca: e.target.value }))}
                 InputProps={{
@@ -351,12 +353,12 @@ export default function TiposDespesa() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Descrição</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Data Criação</TableCell>
-                <TableCell>Despesas Vinculadas</TableCell>
-                <TableCell align="center">Ações</TableCell>
+                <TableCell>{t('tiposDespesa.id')}</TableCell>
+                <TableCell>{t('tiposDespesa.descricao')}</TableCell>
+                <TableCell>{t('tiposDespesa.status')}</TableCell>
+                <TableCell>{t('tiposDespesa.dataCriacao')}</TableCell>
+                <TableCell>{t('tiposDespesa.despesasVinculadas')}</TableCell>
+                <TableCell align="center">{t('tiposDespesa.acoes')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

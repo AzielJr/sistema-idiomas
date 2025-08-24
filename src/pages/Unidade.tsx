@@ -19,7 +19,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Chip
+  Chip,
+  CircularProgress,
+  Avatar
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -32,55 +34,76 @@ import {
   PhoneAndroid as PhoneAndroidIcon,
   Image as ImageIcon
 } from "@mui/icons-material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContextSimple";
 import PageHeader from "../components/PageHeader";
 
 interface Unidade {
   id: number;
-  unidade: string;
+  razaoSocial: string;
+  fantasia: string;
   cnpj: string;
   contato: string;
-  celular: string;
-  imagem: string;
+  celular_contato: string;
+  logomarca?: string;
+  email: string;
+  cep: string;
+  endereco: string;
+  numero: string;
+  uf: string;
+  complemento: string;
+  bairro: string;
+  cidade: string;
+  ativo: boolean;
 }
 
 export default function Unidade() {
-  const [unidades, setUnidades] = useState<Unidade[]>([
-    {
-      id: 1,
-      unidade: "Centro de Idiomas - Unidade Centro",
-      cnpj: "12.345.678/0001-90",
-      contato: "Maria Silva",
-      celular: "(11) 99999-1234",
-      imagem: ""
-    },
-    {
-      id: 2,
-      unidade: "Centro de Idiomas - Unidade Norte",
-      cnpj: "12.345.678/0002-71",
-      contato: "João Santos",
-      celular: "(11) 98888-5678",
-      imagem: ""
-    },
-    {
-      id: 3,
-      unidade: "Centro de Idiomas - Unidade Sul",
-      cnpj: "12.345.678/0003-52",
-      contato: "Ana Costa",
-      celular: "(11) 97777-9012",
-      imagem: ""
-    }
-  ]);
+  const navigate = useNavigate();
+  const { fetchWithAuthSafe } = useAuth();
+  const [unidades, setUnidades] = useState<Unidade[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [dialogAberto, setDialogAberto] = useState(false);
   const [unidadeEditando, setUnidadeEditando] = useState<Unidade | null>(null);
 
+  useEffect(() => {
+    carregarUnidades();
+  }, []);
+
+  const carregarUnidades = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchWithAuthSafe('http://localhost:8080/api/unidades');
+      if (response && response.ok) {
+        const data = await response.json();
+        setUnidades(data);
+      } else {
+        console.error('Erro ao carregar unidades:', response?.status);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar unidades:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [novaUnidade, setNovaUnidade] = useState<Omit<Unidade, 'id'>>({
-    unidade: '',
+    razaoSocial: '',
+    fantasia: '',
     cnpj: '',
     contato: '',
-    celular: '',
-    imagem: ''
+    celular_contato: '',
+    logomarca: '',
+    email: '',
+    cep: '',
+    endereco: '',
+    numero: '',
+    uf: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    ativo: true
   });
 
   const abrirDialog = (unidade?: Unidade) => {
@@ -90,11 +113,21 @@ export default function Unidade() {
     } else {
       setUnidadeEditando(null);
       setNovaUnidade({
-        unidade: '',
+        razaoSocial: '',
+        fantasia: '',
         cnpj: '',
         contato: '',
-        celular: '',
-        imagem: ''
+        celular_contato: '',
+        logomarca: '',
+        email: '',
+        cep: '',
+        endereco: '',
+        numero: '',
+        uf: '',
+        complemento: '',
+        bairro: '',
+        cidade: '',
+        ativo: true
       });
     }
     setDialogAberto(true);
@@ -150,7 +183,7 @@ export default function Unidade() {
 
   const handleCelularChange = (value: string) => {
     const celularFormatado = formatarCelular(value);
-    setNovaUnidade(prev => ({ ...prev, celular: celularFormatado }));
+    setNovaUnidade(prev => ({ ...prev, celular_contato: celularFormatado }));
   };
 
   const validarCNPJ = (cnpj: string) => {
@@ -159,78 +192,72 @@ export default function Unidade() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 0.5 }}>
       <PageHeader 
-        titulo="Unidades" 
-        subtitulo="Gerencie as unidades da instituição"
+        title="Unidades" 
+        rightContent={
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', height: '100%' }}>
+              <Box sx={{ 
+                 textAlign: 'center', 
+                 backgroundColor: '#42a5f5', 
+                 color: 'white', 
+                 px: 1.5, 
+                 py: 0.3, 
+                 borderRadius: 2,
+                 minWidth: 70,
+                 display: 'flex',
+                 flexDirection: 'column',
+                 justifyContent: 'center',
+                 alignItems: 'center'
+               }}>
+                <Typography variant="body2" fontWeight="bold" sx={{ mb: -0.625 }}>
+                  {unidades.length}
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.7rem' }}>
+                  Total
+                </Typography>
+              </Box>
+              <Box sx={{ 
+                 textAlign: 'center', 
+                 backgroundColor: 'success.main', 
+                 color: 'white', 
+                 px: 1.5, 
+                 py: 0.3, 
+                 borderRadius: 2,
+                 minWidth: 70,
+                 display: 'flex',
+                 flexDirection: 'column',
+                 justifyContent: 'center',
+                 alignItems: 'center'
+               }}>
+                <Typography variant="body2" fontWeight="bold" sx={{ mb: -0.625 }}>
+                  {unidades.filter(u => u.ativo).length}
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.7rem' }}>
+                  Ativas
+                </Typography>
+              </Box>
+            </Box>
+        }
       />
 
-      {/* Cards de Resumo */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {unidades.length}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Total de Unidades
-                  </Typography>
-                </Box>
-                <BusinessIcon sx={{ fontSize: 40, opacity: 0.8 }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {unidades.filter(u => validarCNPJ(u.cnpj)).length}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    CNPJs Válidos
-                  </Typography>
-                </Box>
-                <DescriptionIcon sx={{ fontSize: 40, opacity: 0.8 }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4}>
-          <Card sx={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" fontWeight="bold">
-                    {unidades.length > 0 ? '100%' : '0%'}
-                  </Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                    Cobertura
-                  </Typography>
-                </Box>
-                <LocationOnIcon sx={{ fontSize: 40, opacity: 0.8 }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Botão Adicionar */}
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
+      {/* Botões */}
+      <Box sx={{ mb: 3, mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+        <Button
+          variant="outlined"
+          startIcon={<BusinessIcon />}
+          size="large"
+        >
+          Relatório
+        </Button>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => abrirDialog()}
+          onClick={() => navigate('/administracao/unidade/cadastro')}
           size="large"
+          sx={{ backgroundColor: '#1565c0', '&:hover': { backgroundColor: '#0d47a1' } }}
         >
-          Nova Unidade
+          Cadastrar
         </Button>
       </Box>
 
@@ -239,18 +266,72 @@ export default function Unidade() {
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableCell><strong>Logo</strong></TableCell>
               <TableCell><strong>ID</strong></TableCell>
-              <TableCell><strong>Nome da Unidade</strong></TableCell>
-              <TableCell><strong>CNPJ</strong></TableCell>
+              <TableCell><strong>Nome Fantasia</strong></TableCell>
               <TableCell><strong>Contato</strong></TableCell>
-              <TableCell><strong>Celular</strong></TableCell>
               <TableCell><strong>Status</strong></TableCell>
               <TableCell align="center"><strong>Ações</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {unidades.map((unidade) => (
-              <TableRow key={unidade.id} hover>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <CircularProgress size={40} />
+                  <Typography variant="body2" sx={{ mt: 2 }}>Carregando unidades...</Typography>
+                </TableCell>
+              </TableRow>
+            ) : unidades.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
+                  <Typography variant="body2" color="text.secondary">Nenhuma unidade encontrada</Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              unidades.map((unidade) => (
+                <TableRow key={unidade.id} hover>
+                <TableCell sx={{ py: 1 }}>
+                  <Box
+                    sx={{
+                      width: 62,
+                      height: 40,
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: unidade.logomarca ? 'transparent' : 'primary.main',
+                      border: '1px solid #e0e0e0'
+                    }}
+                  >
+                    {unidade.logomarca ? (
+                      <img
+                        src={unidade.logomarca.startsWith('data:') ? unidade.logomarca : `data:image/jpeg;base64,${unidade.logomarca}`}
+                        alt="Logo"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                        onError={(e) => {
+                          // Se a imagem falhar ao carregar, mostra o ícone padrão
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            const icon = parent.querySelector('svg');
+                            if (icon) {
+                              (icon as HTMLElement).style.display = 'block';
+                            }
+                          }
+                        }}
+                      />
+                    ) : (
+                      <BusinessIcon sx={{ fontSize: 18, color: 'white' }} />
+                    )}
+                  </Box>
+                </TableCell>
                 <TableCell>
                   <Typography variant="body2" fontWeight="bold">
                     {unidade.id}
@@ -258,161 +339,51 @@ export default function Unidade() {
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2" fontWeight="medium">
-                    {unidade.unidade}
+                    {unidade.fantasia}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" fontFamily="monospace">
-                    {unidade.cnpj}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">
-                    {unidade.contato}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontFamily="monospace">
-                    {unidade.celular}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <PhoneIcon sx={{ mr: 1, fontSize: 16, color: 'text.secondary' }} />
+                    <Typography variant="body2" fontFamily="monospace">
+                      {unidade.celular_contato}
+                    </Typography>
+                  </Box>
                 </TableCell>
                 <TableCell>
                   <Chip 
-                    label={validarCNPJ(unidade.cnpj) ? 'Ativo' : 'CNPJ Inválido'}
+                    label={unidade.ativo ? 'Ativo' : 'Inativo'}
                     size="small" 
-                    color={validarCNPJ(unidade.cnpj) ? 'success' : 'error'}
+                    color={unidade.ativo ? 'success' : 'error'}
                   />
                 </TableCell>
                 <TableCell align="center">
-                  <IconButton size="small" onClick={() => abrirDialog(unidade)}>
+                  <IconButton size="small" onClick={() => navigate(`/administracao/unidade/cadastro/${unidade.id}`)}>
                     <EditIcon fontSize="small" />
                   </IconButton>
                   <IconButton size="small" onClick={() => excluirUnidade(unidade.id)}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
-              </TableRow>
-            ))}
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {unidades.length === 0 && (
-        <Paper sx={{ p: 4, textAlign: 'center', mt: 3 }}>
-          <BusinessIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            Nenhuma unidade encontrada
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Comece adicionando uma nova unidade
-          </Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => abrirDialog()}>
-            Adicionar Unidade
-          </Button>
-        </Paper>
-      )}
-
-      {/* FAB para adicionar */}
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-        onClick={() => abrirDialog()}
-      >
-        <AddIcon />
-      </Fab>
-
-      {/* Dialog para adicionar/editar unidade */}
+      {/* Dialog para adicionar/editar unidade - Será substituído por navegação */}
       <Dialog open={dialogAberto} onClose={fecharDialog} maxWidth="sm" fullWidth>
         <DialogTitle>
           {unidadeEditando ? 'Editar Unidade' : 'Nova Unidade'}
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Nome da Unidade"
-                value={novaUnidade.unidade}
-                onChange={(e) => setNovaUnidade(prev => ({ ...prev, unidade: e.target.value }))}
-                placeholder="Ex: Centro de Idiomas - Unidade Centro"
-                required
-                InputProps={{
-                  startAdornment: <BusinessIcon sx={{ mr: 1, color: 'action.active' }} />
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="CNPJ"
-                value={novaUnidade.cnpj}
-                onChange={(e) => handleCNPJChange(e.target.value)}
-                placeholder="XX.XXX.XXX/XXXX-XX"
-                required
-                inputProps={{ maxLength: 18 }}
-                error={novaUnidade.cnpj !== '' && !validarCNPJ(novaUnidade.cnpj)}
-                helperText={
-                  novaUnidade.cnpj !== '' && !validarCNPJ(novaUnidade.cnpj) 
-                    ? 'CNPJ deve ter 14 dígitos' 
-                    : 'Formato: XX.XXX.XXX/XXXX-XX'
-                }
-                InputProps={{
-                  startAdornment: <DescriptionIcon sx={{ mr: 1, color: 'action.active' }} />
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Contato Responsável"
-                value={novaUnidade.contato}
-                onChange={(e) => setNovaUnidade(prev => ({ ...prev, contato: e.target.value }))}
-                placeholder="Ex: Maria Silva"
-                required
-                InputProps={{
-                  startAdornment: <PhoneIcon sx={{ mr: 1, color: 'action.active' }} />
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Celular"
-                value={novaUnidade.celular}
-                onChange={(e) => handleCelularChange(e.target.value)}
-                placeholder="(XX) XXXXX-XXXX"
-                required
-                inputProps={{ maxLength: 15 }}
-                InputProps={{
-                  startAdornment: <PhoneAndroidIcon sx={{ mr: 1, color: 'action.active' }} />
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="URL da Logomarca"
-                value={novaUnidade.imagem}
-                onChange={(e) => setNovaUnidade(prev => ({ ...prev, imagem: e.target.value }))}
-                placeholder="https://exemplo.com/logo.png"
-                InputProps={{
-                  startAdornment: <ImageIcon sx={{ mr: 1, color: 'action.active' }} />
-                }}
-                helperText="URL da imagem da logomarca da unidade (opcional)"
-              />
-            </Grid>
-          </Grid>
+          <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
+            Esta funcionalidade será implementada em uma tela separada.
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={fecharDialog}>Cancelar</Button>
-          <Button 
-            onClick={salvarUnidade} 
-            variant="contained"
-            disabled={!novaUnidade.unidade || !validarCNPJ(novaUnidade.cnpj) || !novaUnidade.contato || !novaUnidade.celular}
-          >
-            {unidadeEditando ? 'Salvar' : 'Adicionar'}
-          </Button>
+          <Button onClick={fecharDialog}>Fechar</Button>
         </DialogActions>
       </Dialog>
     </Box>
